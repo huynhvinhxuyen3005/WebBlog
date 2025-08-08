@@ -1,0 +1,61 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Nguyễn Văn A",
+      "username": "vana",
+      "password": "123456"
+    },
+    {
+      "id": "u2",
+      "name": "Trần Thị B",
+      "username": "tranb",
+      "password": "abcdef"
+    },
+    {
+      "id": "1754487026290",
+      "name": "Huỳnh Vĩnh Xuyên",
+      "username": "huynhxuyen3005",
+      "password": "30051999"
+    },
+    {
+      "id": "1754653468745",
+      "name": "Phạm Quang Vinh Hô",
+      "username": "quangvinh1810",
+      "password": "123456"
+    }
+  ],
+  "posts": [
+    {
+      "id": "b1",
+      "title": "Lập trình React từ A đến Z",
+      "content": "React là thư viện JavaScript phổ biến để xây dựng giao diện người dùng...",
+      "authorId": "u1",
+      "visibility": "public",
+      "createdAt": "2024-07-20T10:00:00.000Z",
+      "comments": [
+        {
+          "id": "c1",
+          "userId": "u2",
+          "content": "Bài viết rất hữu ích, cảm ơn bạn!",
+          "createdAt": "2024-07-21T08:00:00.000Z"
+        },
+        {
+          "id": "c2",
+          "userId": "u1",
+          "content": "Cảm ơn bạn đã góp ý!",
+          "createdAt": "2024-07-21T09:00:00.000Z"
+        }
+      ]
+    },
+    {
+      "id": "b2",
+      "title": "Kỹ thuật viết API hiệu quả với Node.js",
+      "content": "Trong bài này, chúng ta sẽ tìm hiểu cách viết API RESTful hiệu quả...",
+      "authorId": "u2",
+      "visibility": "private",
+      "createdAt": "2024-07-22T14:30:00.000Z",
+      "comments": []
+    }
+  ]
+}

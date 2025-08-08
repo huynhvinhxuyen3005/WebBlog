@@ -1,0 +1,76 @@
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.profile-container .ant-card {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+}
+
+.profile-container .ant-card-body {
+    padding: 32px;
+}
+
+.profile-container .ant-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin-bottom: 16px;
+}
+
+.profile-container .ant-typography {
+    margin-bottom: 8px;
+}
+
+.profile-container .ant-form-item {
+    margin-bottom: 24px;
+}
+
+.profile-container .ant-form-item-label > label {
+    font-weight: 500;
+    color: #333;
+}
+
+.profile-container .ant-input,
+.profile-container .ant-input-password {
+    border-radius: 6px;
+    border: 1px solid #d9d9d9;
+    transition: all 0.3s ease;
+    height: 40px;
+}
+
+.profile-container .ant-input:focus,
+.profile-container .ant-input-password:focus,
+.profile-container .ant-input:hover,
+.profile-container .ant-input-password:hover {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.profile-container .ant-btn {
+    height: 44px;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    padding: 0 24px;
+}
+
+.profile-container .ant-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+}
+
+.profile-container .ant-divider {
+    margin: 32px 0;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        padding: 16px;
+    }
+    
+    .profile-container .ant-card-body {
+        padding: 24px;
+    }
+} 

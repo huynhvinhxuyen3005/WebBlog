@@ -1,0 +1,89 @@
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.home-header .ant-typography {
+    margin: 0;
+}
+
+.home-container .ant-select {
+    margin-bottom: 20px;
+    min-width: 200px;
+}
+
+.home-container .ant-card {
+    height: 100%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.home-container .ant-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.home-container .ant-card-head {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.home-container .ant-card-head-title {
+    font-weight: 600;
+    color: #1890ff;
+}
+
+.home-container .ant-card-body {
+    padding: 16px;
+}
+
+.home-container .ant-card-actions {
+    background-color: #fafafa;
+}
+
+.home-container .ant-card-actions > li {
+    margin: 8px 0;
+}
+
+.home-container .ant-card-actions .anticon {
+    font-size: 16px;
+    color: #666;
+    transition: color 0.3s ease;
+}
+
+.home-container .ant-card-actions .anticon:hover {
+    color: #1890ff;
+}
+
+.home-container .ant-typography {
+    color: #666;
+    line-height: 1.6;
+}
+
+.home-container .ant-row {
+    margin-bottom: 16px;
+}
+
+@media (max-width: 768px) {
+    .home-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .home-header .ant-btn {
+        align-self: flex-start;
+    }
+    
+    .home-container {
+        padding: 16px;
+    }
+} 

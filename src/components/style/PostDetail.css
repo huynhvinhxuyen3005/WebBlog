@@ -1,0 +1,65 @@
+.post-detail-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.comment-list {
+    margin-top: 20px;
+}
+
+.comment-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-content {
+    flex: 1;
+}
+
+.comment-content > div {
+    margin: 4px 0;
+}
+
+.comment-content .ant-typography {
+    margin-bottom: 4px;
+}
+
+.post-detail-container .ant-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-detail-container .ant-typography h2 {
+    color: #1890ff;
+    margin-bottom: 16px;
+}
+
+.post-detail-container .ant-divider {
+    margin: 24px 0;
+}
+
+.post-detail-container .ant-input {
+    margin-bottom: 8px;
+}
+
+.post-detail-container .ant-btn {
+    margin-right: 8px;
+}
+
+.post-detail-container .ant-avatar {
+    flex-shrink: 0;
+}
+
+.post-detail-container .ant-tag {
+    margin-left: 8px;
+}
+
+.post-detail-container .ant-space {
+    margin-bottom: 16px;
+} 

@@ -1,0 +1,82 @@
+.edit-post-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.editor-wrapper {
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.editor-toolbar {
+    background-color: #fafafa;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+}
+
+.editor-content {
+    padding: 12px;
+    min-height: 200px;
+}
+
+.editor-content .ProseMirror {
+    outline: none;
+    min-height: 180px;
+}
+
+.editor-content .ProseMirror p {
+    margin: 0.5em 0;
+}
+
+.editor-content .ProseMirror h1,
+.editor-content .ProseMirror h2,
+.editor-content .ProseMirror h3,
+.editor-content .ProseMirror h4,
+.editor-content .ProseMirror h5,
+.editor-content .ProseMirror h6 {
+    margin: 1em 0 0.5em 0;
+}
+
+.editor-content .ProseMirror ul,
+.editor-content .ProseMirror ol {
+    padding-left: 1.5em;
+    margin: 0.5em 0;
+}
+
+.editor-content .ProseMirror blockquote {
+    border-left: 3px solid #d9d9d9;
+    margin: 0.5em 0;
+    padding-left: 1em;
+    color: #666;
+}
+
+.editor-content .ProseMirror code {
+    background-color: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+}
+
+.editor-content .ProseMirror pre {
+    background-color: #f5f5f5;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+}
+
+.editor-content .ProseMirror pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.editor-content .ProseMirror .is-editor-empty:first-child::before {
+    color: #adb5bd;
+    content: attr(data-placeholder);
+    float: left;
+    height: 0;
+    pointer-events: none;
+} 
