@@ -3,13 +3,14 @@ import { Button, Form, Input, Typography, Card, Avatar, Space, Divider } from "a
 import { UserOutlined, SaveOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "../style/Home.css";
-import { useNavigate } from "react-router-dom";
+import {useNavigate} from "react-router-dom";
+
 const { Title, Text } = Typography;
+
 export default function Profile({ currentUser, setCurrentUser }) {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-
     useEffect(() => {
         if (currentUser) {
             form.setFieldsValue({
@@ -20,7 +21,6 @@ export default function Profile({ currentUser, setCurrentUser }) {
         }
     }, [currentUser, form]);
 
-
     const handleUpdate = async (values) => {
         setLoading(true);
         try {
@@ -28,19 +28,22 @@ export default function Profile({ currentUser, setCurrentUser }) {
                 name: values.name,
                 username: values.username,
             };
-
             if (values.password) {
                 updateData.password = values.password;
             }
 
-            const res = await axios.patch(`http://localhost:9999/users/${currentUser.id}`, updateData);
-            setCurrentUser(res.data);
-            localStorage.setItem("user", JSON.stringify(res.data));
+            await axios.patch(`http://localhost:9999/users/${currentUser.id}`, updateData);
+            
+            const updatedUser = { ...currentUser, ...updateData };
+            localStorage.setItem("user", JSON.stringify(updatedUser));
+            setCurrentUser(updatedUser);
             alert("Cập nhật thông tin thành công!");
-            navigate("/");
-            form.setFieldsValue({ password: "" });
+            navigate("/")
+            form.setFieldsValue({ password: "" }); // Reset password field
         } catch (error) {
             alert("Cập nhật thất bại! Vui lòng thử lại.");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -99,9 +102,9 @@ export default function Profile({ currentUser, setCurrentUser }) {
 
                     <Form.Item>
                         <Space>
-                            <Button
-                                type="primary"
-                                htmlType="submit"
+                            <Button 
+                                type="primary" 
+                                htmlType="submit" 
                                 loading={loading}
                                 icon={<SaveOutlined />}
                             >

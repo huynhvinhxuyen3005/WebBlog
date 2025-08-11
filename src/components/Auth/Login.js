@@ -11,12 +11,9 @@ export default function Login({ setCurrentUser }) {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-
     const handleLogin = (values) => {
         setLoading(true);
-        axios
-            .get(`http://localhost:9999/users?username=${values.username}&password=${values.password}`)
-            .then((res) => {
+        axios.get(`http://localhost:9999/users?username=${values.username}&password=${values.password}`).then((res) => {
                 if (res.data.length > 0) {
                     const user = res.data[0];
                     localStorage.setItem("user", JSON.stringify(user));
@@ -25,6 +22,7 @@ export default function Login({ setCurrentUser }) {
                     navigate("/")
                 } else {
                     alert("Sai tên đăng nhập hoặc mật khẩu!");
+                    navigate("/login")
                 }
             })
     };
@@ -80,13 +78,11 @@ export default function Login({ setCurrentUser }) {
                             style={{ borderRadius: '8px' }}
                         />
                     </Form.Item>
-
                     <Form.Item>
                         <Button 
                             type="primary" 
-                            htmlType="submit" 
-                            block 
-                            loading={loading}
+                            htmlType="submit"
+                            block
                             size="large"
                             style={{ 
                                 borderRadius: '8px',
@@ -95,7 +91,7 @@ export default function Login({ setCurrentUser }) {
                                 fontWeight: '500'
                             }}
                         >
-                            {loading ? 'Đang đăng nhập...' : '🚀 Đăng nhập'}
+                            {'🚀 Đăng nhập'}
                         </Button>
                     </Form.Item>
 

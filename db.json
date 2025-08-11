@@ -3,26 +3,20 @@
     {
       "id": "u1",
       "name": "Nguyễn Văn A",
-      "username": "vana",
-      "password": "123456"
+      "username": "a",
+      "password": "1"
     },
     {
       "id": "u2",
       "name": "Trần Thị B",
-      "username": "tranb",
-      "password": "abcdef"
+      "username": "b",
+      "password": "2"
     },
     {
-      "id": "1754487026290",
+      "id": "1754913156508",
       "name": "Huỳnh Vĩnh Xuyên",
       "username": "huynhxuyen3005",
       "password": "30051999"
-    },
-    {
-      "id": "1754653468745",
-      "name": "Phạm Quang Vinh Hô",
-      "username": "quangvinh1810",
-      "password": "123456"
     }
   ],
   "posts": [
@@ -56,6 +50,40 @@
       "visibility": "private",
       "createdAt": "2024-07-22T14:30:00.000Z",
       "comments": []
+    },
+    {
+      "id": "b3",
+      "title": "Lập trình React từ A đến ZZZZZZZZZZZZZZZ",
+      "content": "React là thư viện JavaScript phổ biến để xây dựng giao diện người dùng...",
+      "authorId": "u1",
+      "visibility": "private",
+      "createdAt": "2024-07-20T10:00:00.000Z",
+      "comments": []
+    },
+    {
+      "id": "b4",
+      "title": "Kỹ thuật viết API hiệu quả với Node.jssssssssssss",
+      "content": "Trong bài này, chúng ta sẽ tìm hiểu cách viết API RESTful hiệu quả...",
+      "authorId": "u2",
+      "visibility": "public",
+      "createdAt": "2024-07-22T14:30:00.000Z",
+      "comments": []
+    },
+    {
+      "id": "8a09",
+      "title": "Anh Trai Say Hi",
+      "content": "<p>30 Anh Trai Đã Tạo Nên 1 mùa hè rực rỡ</p>",
+      "visibility": "private",
+      "authorId": "1754913156508",
+      "createdAt": "2025-08-11T11:54:02.682Z",
+      "comments": [
+        {
+          "id": "1754913255233",
+          "content": "ok",
+          "userId": "1754913156508",
+          "createdAt": "2025-08-11T11:54:15.233Z"
+        }
+      ]
     }
   ]
 }
