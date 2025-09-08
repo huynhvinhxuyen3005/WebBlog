@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Card, Select, Row, Col, Typography, Avatar, Tag, Space, } from "antd";
+import { Button, Card, Select, Row, Col, Typography, Avatar, Tag, Space, message, notification } from "antd";
 import { useNavigate } from "react-router-dom";
-import { EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined, } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined, HeartOutlined, HeartFilled, MessageOutlined } from "@ant-design/icons";
 import moment from "moment";
 import "../style/Home.css";
 
@@ -11,6 +11,7 @@ const { Title, Text } = Typography;
 export default function Home({ currentUser }) {
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
+    const [likes, setLikes] = useState([]);
     const [visibilityFilter, setVisibilityFilter] = useState("all");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function Home({ currentUser }) {
     useEffect(() => {
         fetchPosts();
         fetchUsers();
+        fetchLikes();
     }, []);
 
     const fetchPosts = () => {
@@ -34,6 +36,12 @@ export default function Home({ currentUser }) {
     const fetchUsers = () => {
         axios.get("http://localhost:9999/users")
             .then(res => setUsers(res.data))
+            .catch(err => console.error(err));
+    };
+
+    const fetchLikes = () => {
+        axios.get("http://localhost:9999/likes")
+            .then(res => setLikes(res.data))
             .catch(err => console.error(err));
     };
 
@@ -55,9 +63,68 @@ export default function Home({ currentUser }) {
         return user ? user.name : 'Unknown';
     };
 
+    const isLiked = (postId) => {
+        return currentUser && likes.some(like => like.userId === currentUser.id && like.postId === postId);
+    };
+
+    const handleLike = async (postId) => {
+        if (!currentUser) {
+            message.error('Vui lòng đăng nhập để like bài viết!');
+            return;
+        }
+
+        const existingLike = likes.find(like => like.userId === currentUser.id && like.postId === postId);
+        
+        try {
+            if (existingLike) {
+                // Unlike
+                await axios.delete(`http://localhost:9999/likes/${existingLike.id}`);
+                const updatedPost = posts.find(p => p.id === postId);
+                if (updatedPost) {
+                    await axios.put(`http://localhost:9999/posts/${postId}`, {
+                        ...updatedPost,
+                        likesCount: Math.max(0, updatedPost.likesCount - 1)
+                    });
+                }
+                notification.success({
+                    message: "💔 Đã bỏ like",
+                    description: "Bạn đã bỏ like bài viết này.",
+                    duration: 2
+                });
+            } else {
+                // Like
+                const newLike = {
+                    id: Date.now().toString(),
+                    userId: currentUser.id,
+                    postId: postId
+                };
+                await axios.post("http://localhost:9999/likes", newLike);
+                const updatedPost = posts.find(p => p.id === postId);
+                if (updatedPost) {
+                    await axios.put(`http://localhost:9999/posts/${postId}`, {
+                        ...updatedPost,
+                        likesCount: updatedPost.likesCount + 1
+                    });
+                }
+                notification.success({
+                    message: "❤️ Đã like",
+                    description: "Bạn đã like bài viết này.",
+                    duration: 2
+                });
+            }
+            fetchPosts();
+            fetchLikes();
+        } catch (error) {
+            message.error('Có lỗi xảy ra khi like bài viết!');
+        }
+    };
+
     const filteredPosts = posts.filter(post => {
         if (!currentUser) {
             return post.visibility === "public";
+        }
+        if (currentUser.role === "admin") {
+            return true; // Admin can see all posts
         }
         if (visibilityFilter === "all") {
             return post.visibility === "public" || post.authorId === currentUser.id;
@@ -91,7 +158,7 @@ export default function Home({ currentUser }) {
                 )}
             </div>
 
-            {currentUser && (
+            {currentUser && currentUser.role !== "admin" && (
                 <Select
                     value={visibilityFilter}
                     onChange={setVisibilityFilter}
@@ -102,6 +169,22 @@ export default function Home({ currentUser }) {
                         { label: "🌍 Bài viết công khai", value: "public" }
                     ]}
                 />
+            )}
+
+            {currentUser && currentUser.role === "admin" && (
+                <div style={{ 
+                    marginBottom: 20, 
+                    padding: 16, 
+                    background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)', 
+                    border: 'none', 
+                    borderRadius: 12,
+                    color: 'white',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                }}>
+                    <Text style={{ color: 'white', fontSize: '16px' }}>
+                        👑 <strong>Chế độ Admin:</strong> Bạn có thể xem và quản lý tất cả bài viết!
+                    </Text>
+                </div>
             )}
 
             {!currentUser && (
@@ -145,12 +228,56 @@ export default function Home({ currentUser }) {
                                     📅 {moment(post.createdAt).format('DD/MM/YYYY')}
                                 </Text>
                             }
-                            actions={
-                                currentUser && post.authorId === currentUser.id ? [
-                                    <EditOutlined key="edit" onClick={() => navigate(`/edit/${post.id}`)} />,
-                                    <DeleteOutlined key="delete" onClick={() => handleDelete(post.id)} />
-                                ] : []
-                            }
+                            actions={[
+                                ...(currentUser ? [
+                                    <Button
+                                        key="like"
+                                        type="text"
+                                        icon={isLiked(post.id) ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleLike(post.id);
+                                        }}
+                                        style={{ color: isLiked(post.id) ? '#ff4d4f' : '#8c8c8c' }}
+                                    >
+                                        {post.likesCount || 0}
+                                    </Button>
+                                ] : []),
+                                <Button
+                                    key="comment"
+                                    type="text"
+                                    icon={<MessageOutlined />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        navigate(`/post/${post.id}`);
+                                    }}
+                                >
+                                    {post.commentsCount || 0}
+                                </Button>,
+                                ...(currentUser && (post.authorId === currentUser.id || currentUser.role === "admin") ? [
+                                    <Button
+                                        key="edit"
+                                        type="text"
+                                        icon={<EditOutlined />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            navigate(`/edit/${post.id}`);
+                                        }}
+                                    />
+                                ] : []),
+                                ...(currentUser && (post.authorId === currentUser.id || currentUser.role === "admin") ? [
+                                    <Button
+                                        key="delete"
+                                        type="text"
+                                        danger
+                                        icon={<DeleteOutlined />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete(post.id);
+                                        }}
+                                    />
+                                ] : [])
+                            ]}
                             onClick={() => navigate(`/post/${post.id}`)}
                             hoverable
                             loading={loading}
@@ -159,10 +286,18 @@ export default function Home({ currentUser }) {
                                 <Text ellipsis style={{ lineHeight: 1.6 }}>
                                     {post.content.replace(/<[^>]+>/g, "").slice(0, 120)}...
                                 </Text>
-                                <div style={{ marginTop: 8 }}>
-                                    <Text type="secondary" style={{ fontSize: 12 }}>
-                                        💬 {post.comments?.length || 0} bình luận
-                                    </Text>
+                                <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <Space size="small">
+                                        <Text type="secondary" style={{ fontSize: 12 }}>
+                                            ❤️ {post.likesCount || 0} likes
+                                        </Text>
+                                        <Text type="secondary" style={{ fontSize: 12 }}>
+                                            💬 {post.commentsCount || 0} bình luận
+                                        </Text>
+                                    </Space>
+                                    {currentUser && currentUser.role === "admin" && (
+                                        <Tag color="red" size="small">ADMIN</Tag>
+                                    )}
                                 </div>
                             </div>
                         </Card>

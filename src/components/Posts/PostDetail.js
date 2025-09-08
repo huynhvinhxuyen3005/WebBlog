@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Divider, List, Avatar, Button, Input, message, Tag, Space, Spin, notification } from 'antd';
-import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, UserOutlined, MessageOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, UserOutlined, MessageOutlined, CheckCircleOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
 import moment from 'moment';
 import '../style/PostDetail.css';
 
@@ -14,6 +14,7 @@ export default function PostDetail({ currentUser }) {
     const navigate = useNavigate();
     const [post, setPost] = useState(null);
     const [users, setUsers] = useState([]);
+    const [likes, setLikes] = useState([]);
     const [commentContent, setCommentContent] = useState('');
     const [loading, setLoading] = useState(false);
     const [postLoading, setPostLoading] = useState(true);
@@ -21,6 +22,7 @@ export default function PostDetail({ currentUser }) {
     useEffect(() => {
         fetchPost();
         fetchUsers();
+        fetchLikes();
     }, [id]);
 
     const showSuccessNotification = (title, content) => {
@@ -55,6 +57,12 @@ export default function PostDetail({ currentUser }) {
             .catch(err => console.error(err));
     };
 
+    const fetchLikes = () => {
+        axios.get(`http://localhost:9999/likes`)
+            .then(res => setLikes(res.data))
+            .catch(err => console.error(err));
+    };
+
     const getAuthorName = (authorId) => {
         const user = users.find(u => u.id === authorId);
         return user ? user.name : 'Unknown';
@@ -63,6 +71,59 @@ export default function PostDetail({ currentUser }) {
     const getCommentUser = (userId) => {
         const user = users.find(u => u.id === userId);
         return user ? user.name : 'Ẩn danh';
+    };
+
+    const isLiked = () => {
+        return currentUser && likes.some(like => like.userId === currentUser.id && like.postId === id);
+    };
+
+    const handleLike = async () => {
+        if (!currentUser) {
+            message.error('Vui lòng đăng nhập để like bài viết!');
+            return;
+        }
+
+        const existingLike = likes.find(like => like.userId === currentUser.id && like.postId === id);
+        
+        try {
+            if (existingLike) {
+                // Unlike
+                await axios.delete(`http://localhost:9999/likes/${existingLike.id}`);
+                const updatedPost = {
+                    ...post,
+                    likesCount: Math.max(0, post.likesCount - 1)
+                };
+                await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
+                setPost(updatedPost);
+                notification.success({
+                    message: "💔 Đã bỏ like",
+                    description: "Bạn đã bỏ like bài viết này.",
+                    duration: 2
+                });
+            } else {
+                // Like
+                const newLike = {
+                    id: Date.now().toString(),
+                    userId: currentUser.id,
+                    postId: id
+                };
+                await axios.post("http://localhost:9999/likes", newLike);
+                const updatedPost = {
+                    ...post,
+                    likesCount: post.likesCount + 1
+                };
+                await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
+                setPost(updatedPost);
+                notification.success({
+                    message: "❤️ Đã like",
+                    description: "Bạn đã like bài viết này.",
+                    duration: 2
+                });
+            }
+            fetchLikes();
+        } catch (error) {
+            message.error('Có lỗi xảy ra khi like bài viết!');
+        }
     };
 
     const handleAddComment = () => {
@@ -86,7 +147,8 @@ export default function PostDetail({ currentUser }) {
 
         const updatedPost = {
             ...post,
-            comments: [...post.comments, newComment]
+            comments: [...(post.comments || []), newComment],
+            commentsCount: (post.commentsCount || 0) + 1
         };
 
         axios.put(`http://localhost:9999/posts/${id}`, updatedPost)
@@ -108,7 +170,11 @@ export default function PostDetail({ currentUser }) {
 
     const handleDeleteComment = (commentId) => {
         const updatedComments = post.comments.filter(comment => comment.id !== commentId);
-        const updatedPost = { ...post, comments: updatedComments };
+        const updatedPost = { 
+            ...post, 
+            comments: updatedComments,
+            commentsCount: Math.max(0, (post.commentsCount || 0) - 1)
+        };
 
         axios.put(`http://localhost:9999/posts/${id}`, updatedPost)
             .then(() => {
@@ -157,7 +223,7 @@ export default function PostDetail({ currentUser }) {
         );
     }
 
-    const canEdit = currentUser && post.authorId === currentUser.id;
+    const canEdit = currentUser && (post.authorId === currentUser.id || currentUser.role === "admin");
 
     return (
         <div className="post-detail-container">
@@ -227,10 +293,59 @@ export default function PostDetail({ currentUser }) {
                     }}
                 />
 
+                <Divider />
+
+                <div style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    marginBottom: '24px',
+                    padding: '16px',
+                    background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+                    borderRadius: '12px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                }}>
+                    <Space size="large">
+                        {currentUser ? (
+                            <Button
+                                type="text"
+                                size="large"
+                                icon={isLiked() ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />}
+                                onClick={handleLike}
+                                style={{ 
+                                    color: isLiked() ? '#ff4d4f' : '#8c8c8c',
+                                    fontSize: '16px',
+                                    fontWeight: '500'
+                                }}
+                            >
+                                {isLiked() ? 'Đã like' : 'Like'} ({post.likesCount || 0})
+                            </Button>
+                        ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <HeartOutlined style={{ color: '#8c8c8c', fontSize: '16px' }} />
+                                <Text style={{ color: '#8c8c8c', fontSize: '16px' }}>
+                                    {post.likesCount || 0} likes
+                                </Text>
+                            </div>
+                        )}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <MessageOutlined style={{ color: '#1890ff', fontSize: '16px' }} />
+                            <Text style={{ color: '#1890ff', fontSize: '16px' }}>
+                                {post.commentsCount || 0} bình luận
+                            </Text>
+                        </div>
+                    </Space>
+                    {currentUser && currentUser.role === "admin" && (
+                        <Tag color="red" style={{ fontSize: '12px', fontWeight: 'bold' }}>
+                            👑 ADMIN VIEW
+                        </Tag>
+                    )}
+                </div>
+
                 <Divider orientation="left">
                     <Space>
                         <MessageOutlined />
-                        💬 Bình luận ({post.comments?.length || 0})
+                        💬 Bình luận ({post.commentsCount || 0})
                     </Space>
                 </Divider>
 
@@ -282,7 +397,7 @@ export default function PostDetail({ currentUser }) {
                             <div className="comment-content">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Text strong>{getCommentUser(comment.userId)}</Text>
-                                    {currentUser && (comment.userId === currentUser.id || canEdit) && (
+                                    {currentUser && (comment.userId === currentUser.id || currentUser.role === "admin") && (
                                         <Button 
                                             type="text" 
                                             size="small" 

@@ -2,6 +2,7 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
+    animation: fadeIn 0.6s ease-out;
 }
 
 .comment-list {
@@ -11,12 +12,22 @@
 .comment-item {
     display: flex;
     gap: 12px;
-    padding: 12px 0;
+    padding: 16px;
     border-bottom: 1px solid #f0f0f0;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    background: #fafafa;
+    transition: all 0.3s ease;
+}
+
+.comment-item:hover {
+    background: #f0f8ff;
+    transform: translateX(4px);
 }
 
 .comment-item:last-child {
     border-bottom: none;
+    margin-bottom: 0;
 }
 
 .comment-content {
@@ -32,7 +43,9 @@
 }
 
 .post-detail-container .ant-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
 }
 
 .post-detail-container .ant-typography h2 {

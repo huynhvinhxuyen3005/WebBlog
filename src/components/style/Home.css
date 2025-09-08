@@ -2,6 +2,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+    animation: fadeIn 0.6s ease-out;
 }
 
 .home-header {
@@ -26,11 +27,15 @@
     height: 100%;
     transition: all 0.3s ease;
     cursor: pointer;
+    border-radius: 12px;
+    border: 1px solid #f0f0f0;
+    overflow: hidden;
 }
 
 .home-container .ant-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-color: #1890ff;
 }
 
 .home-container .ant-card-head {
@@ -47,21 +52,34 @@
 }
 
 .home-container .ant-card-actions {
-    background-color: #fafafa;
+    background: linear-gradient(135deg, #f8f9ff 0%, #e6f7ff 100%);
+    border-top: 1px solid #f0f0f0;
 }
 
 .home-container .ant-card-actions > li {
     margin: 8px 0;
 }
 
+.home-container .ant-card-actions .ant-btn {
+    border: none;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.home-container .ant-card-actions .ant-btn:hover {
+    background: rgba(24, 144, 255, 0.1);
+    transform: scale(1.05);
+}
+
 .home-container .ant-card-actions .anticon {
     font-size: 16px;
     color: #666;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .home-container .ant-card-actions .anticon:hover {
     color: #1890ff;
+    transform: scale(1.1);
 }
 
 .home-container .ant-typography {

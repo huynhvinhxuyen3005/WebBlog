@@ -2,88 +2,150 @@
   "users": [
     {
       "id": "u1",
-      "name": "Nguyễn Văn A",
-      "username": "a",
-      "password": "1"
+      "name": "Admin Blog",
+      "username": "admin",
+      "password": "123",
+      "role": "admin"
     },
     {
       "id": "u2",
-      "name": "Trần Thị B",
-      "username": "b",
-      "password": "2"
+      "name": "Trần Thị Viết Lách",
+      "username": "user1",
+      "password": "123",
+      "role": "user"
     },
     {
-      "id": "1754913156508",
-      "name": "Huỳnh Vĩnh Xuyên",
-      "username": "huynhxuyen3005",
-      "password": "30051999"
+      "id": "u3",
+      "name": "Nguyễn Văn Blogger",
+      "username": "user2",
+      "password": "123",
+      "role": "user"
     }
   ],
   "posts": [
     {
-      "id": "b1",
-      "title": "Lập trình React từ A đến Z",
-      "content": "React là thư viện JavaScript phổ biến để xây dựng giao diện người dùng...",
-      "authorId": "u1",
-      "visibility": "public",
-      "createdAt": "2024-07-20T10:00:00.000Z",
-      "comments": [
-        {
-          "id": "c1",
-          "userId": "u2",
-          "content": "Bài viết rất hữu ích, cảm ơn bạn!",
-          "createdAt": "2024-07-21T08:00:00.000Z"
-        },
-        {
-          "id": "c2",
-          "userId": "u1",
-          "content": "Cảm ơn bạn đã góp ý!",
-          "createdAt": "2024-07-21T09:00:00.000Z"
-        }
-      ]
-    },
-    {
-      "id": "b2",
-      "title": "Kỹ thuật viết API hiệu quả với Node.js",
-      "content": "Trong bài này, chúng ta sẽ tìm hiểu cách viết API RESTful hiệu quả...",
+      "id": "p1",
+      "title": "Cách viết blog thu hút người đọc",
+      "content": "Viết blog cần có bố cục rõ ràng, hình ảnh minh họa và lời văn tự nhiên. Để thu hút người đọc, bạn cần:<br/><br/>1. <strong>Tiêu đề hấp dẫn:</strong> Tiêu đề phải ngắn gọn, súc tích và gợi tò mò<br/>2. <strong>Mở đầu ấn tượng:</strong> Câu đầu tiên quyết định người đọc có tiếp tục hay không<br/>3. <strong>Nội dung chất lượng:</strong> Cung cấp thông tin hữu ích, chính xác<br/>4. <strong>Hình ảnh minh họa:</strong> Sử dụng hình ảnh chất lượng cao, phù hợp<br/>5. <strong>Kết thúc có ý nghĩa:</strong> Tóm tắt hoặc đưa ra lời khuyên",
       "authorId": "u2",
-      "visibility": "private",
-      "createdAt": "2024-07-22T14:30:00.000Z",
-      "comments": []
-    },
-    {
-      "id": "b3",
-      "title": "Lập trình React từ A đến ZZZZZZZZZZZZZZZ",
-      "content": "React là thư viện JavaScript phổ biến để xây dựng giao diện người dùng...",
-      "authorId": "u1",
-      "visibility": "private",
-      "createdAt": "2024-07-20T10:00:00.000Z",
-      "comments": []
-    },
-    {
-      "id": "b4",
-      "title": "Kỹ thuật viết API hiệu quả với Node.jssssssssssss",
-      "content": "Trong bài này, chúng ta sẽ tìm hiểu cách viết API RESTful hiệu quả...",
-      "authorId": "u2",
+      "createdAt": "2024-07-01T09:00:00Z",
       "visibility": "public",
-      "createdAt": "2024-07-22T14:30:00.000Z",
+      "likesCount": 5,
+      "commentsCount": 3,
       "comments": []
     },
     {
-      "id": "8a09",
-      "title": "Anh Trai Say Hi Mùa 2",
-      "content": "<p>Anh trai Say Hi Mùa 2 Tung Hint 30 Anh Trai Mùa 2</p>",
-      "visibility": "private",
-      "authorId": "1754913156508",
-      "createdAt": "2025-08-11T11:54:02.682Z",
-      "comments": [
-        {
-          "id": "1754913255233",
-          "content": "ok",
-          "userId": "1754913156508",
-          "createdAt": "2025-08-11T11:54:15.233Z"
-        }
-      ]
+      "id": "p2",
+      "title": "Bí quyết SEO cho blog cá nhân",
+      "content": "SEO (Search Engine Optimization) là yếu tố quan trọng giúp blog của bạn được tìm thấy dễ dàng hơn trên Google. Dưới đây là những bí quyết SEO cơ bản:<br/><br/>• <strong>Từ khóa:</strong> Nghiên cứu và sử dụng từ khóa phù hợp<br/>• <strong>Meta description:</strong> Viết mô tả ngắn gọn, hấp dẫn<br/>• <strong>URL thân thiện:</strong> Sử dụng URL ngắn gọn, có ý nghĩa<br/>• <strong>Nội dung chất lượng:</strong> Tạo nội dung độc đáo, hữu ích<br/>• <strong>Tốc độ tải:</strong> Tối ưu hóa hình ảnh và code",
+      "authorId": "u3",
+      "createdAt": "2024-07-02T14:30:00Z",
+      "visibility": "public",
+      "likesCount": 8,
+      "commentsCount": 2
+    },
+    {
+      "id": "p3",
+      "title": "Công cụ viết blog miễn phí tốt nhất",
+      "content": "Dưới đây là danh sách các công cụ viết blog miễn phí mà bạn có thể sử dụng:<br/><br/>1. <strong>WordPress.com:</strong> Nền tảng phổ biến nhất<br/>2. <strong>Blogger:</strong> Của Google, dễ sử dụng<br/>3. <strong>Medium:</strong> Tập trung vào nội dung<br/>4. <strong>Ghost:</strong> Giao diện đẹp, tối ưu cho viết<br/>5. <strong>Wix:</strong> Nhiều template đẹp",
+      "authorId": "u1",
+      "createdAt": "2024-07-03T11:15:00Z",
+      "visibility": "public",
+      "likesCount": 12,
+      "commentsCount": 5
+    }
+  ],
+  "likes": [
+    {
+      "id": "l1",
+      "userId": "u1",
+      "postId": "p1"
+    },
+    {
+      "id": "l2",
+      "userId": "u3",
+      "postId": "p1"
+    },
+    {
+      "id": "l3",
+      "userId": "u1",
+      "postId": "p2"
+    },
+    {
+      "id": "l4",
+      "userId": "u2",
+      "postId": "p2"
+    },
+    {
+      "id": "l5",
+      "userId": "u3",
+      "postId": "p2"
+    },
+    {
+      "id": "l6",
+      "userId": "u1",
+      "postId": "p3"
+    },
+    {
+      "id": "l7",
+      "userId": "u2",
+      "postId": "p3"
+    },
+    {
+      "id": "l8",
+      "userId": "u3",
+      "postId": "p3"
+    }
+  ],
+  "comments": [
+    {
+      "id": "c1",
+      "postId": "p1",
+      "userId": "u1",
+      "content": "Bài viết rất hữu ích, cảm ơn bạn!",
+      "createdAt": "2024-07-01T10:30:00Z"
+    },
+    {
+      "id": "c2",
+      "postId": "p1",
+      "userId": "u3",
+      "content": "Mình đã áp dụng và thấy hiệu quả rõ rệt!",
+      "createdAt": "2024-07-01T15:45:00Z"
+    },
+    {
+      "id": "c3",
+      "postId": "p1",
+      "userId": "u2",
+      "content": "Cảm ơn bạn đã chia sẻ kinh nghiệm!",
+      "createdAt": "2024-07-02T08:20:00Z"
+    },
+    {
+      "id": "c4",
+      "postId": "p2",
+      "userId": "u1",
+      "content": "SEO thực sự quan trọng cho blog!",
+      "createdAt": "2024-07-02T16:00:00Z"
+    },
+    {
+      "id": "c5",
+      "postId": "p2",
+      "userId": "u2",
+      "content": "Mình sẽ thử áp dụng những tips này.",
+      "createdAt": "2024-07-03T09:30:00Z"
+    },
+    {
+      "id": "c6",
+      "postId": "p3",
+      "userId": "u2",
+      "content": "WordPress vẫn là lựa chọn tốt nhất!",
+      "createdAt": "2024-07-03T12:00:00Z"
+    },
+    {
+      "id": "c7",
+      "postId": "p3",
+      "userId": "u3",
+      "content": "Medium cũng rất tốt cho việc viết.",
+      "createdAt": "2024-07-03T13:15:00Z"
     }
   ]
 }

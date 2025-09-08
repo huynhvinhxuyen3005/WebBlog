@@ -36,7 +36,7 @@ export default function EditPost({ currentUser }) {
             const postData = res.data;
             setPost(postData);
             
-            if (postData.authorId !== currentUser.id) {
+            if (postData.authorId !== currentUser.id && currentUser.role !== "admin") {
                 alert("Bạn không có quyền chỉnh sửa bài viết này!");
                 navigate("/");
                 return;

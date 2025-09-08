@@ -17,6 +17,7 @@ import CreatePost from "./components/pages/CreatePost";
 import EditPost from "./components/pages/EditPost";
 import PostDetail from "./components/Posts/PostDetail";
 import Profile from "./components/User/Profile";
+import AdminDashboard from "./components/Admin/AdminDashboard";
 
 const { Header, Content } = Layout;
 const { Text } = Typography;
@@ -40,6 +41,11 @@ function App() {
             icon: <PlusOutlined />,
             label: <Link to="/create">Tạo bài viết</Link>,
         },
+        ...(currentUser && currentUser.role === 'admin' ? [{
+            key: 'admin',
+            icon: <SettingOutlined />,
+            label: <Link to="/admin">Quản trị</Link>,
+        }] : []),
         {
             type: 'divider',
         },
@@ -208,6 +214,10 @@ function App() {
                         <Route
                             path="/profile"
                             element={currentUser ? <Profile currentUser={currentUser} setCurrentUser={setCurrentUser} /> : <Navigate to="/login" />}
+                        />
+                        <Route
+                            path="/admin"
+                            element={currentUser && currentUser.role === "admin" ? <AdminDashboard currentUser={currentUser} /> : <Navigate to="/" />}
                         />
                     </Routes>
                 </Content>

@@ -43,6 +43,8 @@ export default function CreatePost({ currentUser }) {
             authorId: currentUser.id,
             createdAt: new Date().toISOString(),
             comments: [],
+            likesCount: 0,
+            commentsCount: 0,
         };
 
         axios.post("http://localhost:9999/posts", newPost)
