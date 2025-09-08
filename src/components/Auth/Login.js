@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Button, Form, Input, Typography,Card,} from "antd";
+import { Button, Form, Input, Typography, Card, App } from "antd";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import "../style/Login.css";
 
 const { Title } = Typography;
 
 export default function Login({ setCurrentUser }) {
+    const { message, notification } = App.useApp();
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -18,13 +19,27 @@ export default function Login({ setCurrentUser }) {
                     const user = res.data[0];
                     localStorage.setItem("user", JSON.stringify(user));
                     setCurrentUser(user);
-                   alert("Đăng nhập thành công")
-                    navigate("/")
+                    notification.success({
+                        message: "🎉 Đăng nhập thành công!",
+                        description: `Chào mừng ${user.name} trở lại với Blog System!`,
+                        duration: 3,
+                        placement: 'topRight',
+                        style: {
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                        }
+                    });
+                    navigate("/");
                 } else {
-                    alert("Sai tên đăng nhập hoặc mật khẩu!");
-                    navigate("/login")
+                    message.error("Sai tên đăng nhập hoặc mật khẩu!");
                 }
             })
+            .catch(() => {
+                message.error("Lỗi khi đăng nhập!");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     return (

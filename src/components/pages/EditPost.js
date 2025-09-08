@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card, Form, Input, Select, message, Space, Divider, } from "antd";
+import { Button, Card, Form, Input, Select, App, Space, Divider, } from "antd";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -17,6 +17,7 @@ import axios from "axios";
 import "../style/EditPost.css";
 
 export default function EditPost({ currentUser }) {
+    const { message, notification } = App.useApp();
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const { id } = useParams();
@@ -37,7 +38,7 @@ export default function EditPost({ currentUser }) {
             setPost(postData);
             
             if (postData.authorId !== currentUser.id && currentUser.role !== "admin") {
-                alert("Bạn không có quyền chỉnh sửa bài viết này!");
+                message.error("Bạn không có quyền chỉnh sửa bài viết này!");
                 navigate("/");
                 return;
             }
@@ -51,14 +52,14 @@ export default function EditPost({ currentUser }) {
                 editor.commands.setContent(postData.content);
             }
         }).catch(() => {
-            alert("Không tìm thấy bài viết!");
+            message.error("Không tìm thấy bài viết!");
             navigate("/");
         });
     }, [id, form, editor, currentUser.id, navigate]);
 
     const handleSubmit = async (values) => {
         if (!editor || editor.getText().trim() === "") {
-            alert("Nội dung không được để trống!");
+            message.error("Nội dung không được để trống!");
             return;
         }
 
@@ -72,10 +73,21 @@ export default function EditPost({ currentUser }) {
 
         try {
             await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
-            alert("Cập nhật bài viết thành công")
-            navigate("/")
+            notification.success({
+                message: "✅ Cập nhật bài viết thành công!",
+                description: "Bài viết của bạn đã được cập nhật thành công.",
+                duration: 3,
+                placement: 'topRight',
+                style: {
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                }
+            });
+            navigate("/");
         } catch (error) {
             message.error("Lỗi khi cập nhật bài viết!");
+        } finally {
+            setLoading(false);
         }
     };
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Card, Form, Input, Select, Space, Divider, } from "antd";
+import { Button, Card, Form, Input, Select, Space, Divider, App } from "antd";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -17,6 +17,7 @@ import axios from "axios";
 import "../style/CreatePost.css";
 
 export default function CreatePost({ currentUser }) {
+    const { message, notification } = App.useApp();
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ export default function CreatePost({ currentUser }) {
     });
     const handleSubmit = (values) => {
         if (!editor || editor.getText().trim() === "") {
-            alert("Nội dung không được để trống!");
+            message.error("Nội dung không được để trống!");
             return;
         }
 
@@ -49,9 +50,24 @@ export default function CreatePost({ currentUser }) {
 
         axios.post("http://localhost:9999/posts", newPost)
             .then(() => {
-                alert("Tạo bài viết thành công")
-                navigate("/")
+                notification.success({
+                    message: "🎉 Tạo bài viết thành công!",
+                    description: "Bài viết của bạn đã được đăng thành công.",
+                    duration: 3,
+                    placement: 'topRight',
+                    style: {
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }
+                });
+                navigate("/");
             })
+            .catch(() => {
+                message.error("Lỗi khi tạo bài viết!");
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     if (!editor) {

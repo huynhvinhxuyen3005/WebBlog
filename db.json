@@ -25,8 +25,8 @@
   "posts": [
     {
       "id": "p1",
-      "title": "Cách viết blog thu hút người đọc",
-      "content": "Viết blog cần có bố cục rõ ràng, hình ảnh minh họa và lời văn tự nhiên. Để thu hút người đọc, bạn cần:<br/><br/>1. <strong>Tiêu đề hấp dẫn:</strong> Tiêu đề phải ngắn gọn, súc tích và gợi tò mò<br/>2. <strong>Mở đầu ấn tượng:</strong> Câu đầu tiên quyết định người đọc có tiếp tục hay không<br/>3. <strong>Nội dung chất lượng:</strong> Cung cấp thông tin hữu ích, chính xác<br/>4. <strong>Hình ảnh minh họa:</strong> Sử dụng hình ảnh chất lượng cao, phù hợp<br/>5. <strong>Kết thúc có ý nghĩa:</strong> Tóm tắt hoặc đưa ra lời khuyên",
+      "title": "Cách viết blog thu hút người đọc11",
+      "content": "<p>Viết blog cần có bố cục rõ ràng, hình ảnh minh họa và lời văn tự nhiên. Để thu hút người đọc, bạn cần:<br><br>1. <strong>Tiêu đề hấp dẫn:</strong> Tiêu đề phải ngắn gọn, súc tích và gợi tò mò<br>2. <strong>Mở đầu ấn tượng:</strong> Câu đầu tiên quyết định người đọc có tiếp tục hay không<br>3. <strong>Nội dung chất lượng:</strong> Cung cấp thông tin hữu ích, chính xác<br>4. <strong>Hình ảnh minh họa:</strong> Sử dụng hình ảnh chất lượng cao, phù hợp<br>5. <strong>Kết thúc có ý nghĩa:</strong> Tóm tắt hoặc đưa ra lời khuyên</p>",
       "authorId": "u2",
       "createdAt": "2024-07-01T09:00:00Z",
       "visibility": "public",
@@ -84,7 +84,7 @@
       "authorId": "u1",
       "createdAt": "2024-07-03T11:15:00Z",
       "visibility": "public",
-      "likesCount": 12,
+      "likesCount": 11,
       "commentsCount": 5,
       "comments": [
         {
@@ -144,11 +144,6 @@
     {
       "id": "l6",
       "userId": "u1",
-      "postId": "p3"
-    },
-    {
-      "id": "l7",
-      "userId": "u2",
       "postId": "p3"
     },
     {

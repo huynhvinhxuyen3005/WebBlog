@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Button, Card, Select, Row, Col, Typography, Avatar, Tag, Space, message, notification } from "antd";
+import { Button, Card, Select, Row, Col, Typography, Avatar, Tag, Space, App } from "antd";
 import { useNavigate } from "react-router-dom";
 import { EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined, LikeOutlined, LikeFilled, MessageOutlined } from "@ant-design/icons";
 import moment from "moment";
@@ -9,6 +9,7 @@ import "../style/Home.css";
 const { Title, Text } = Typography;
 
 export default function Home({ currentUser }) {
+    const { message, notification } = App.useApp();
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
     const [likes, setLikes] = useState([]);
@@ -28,7 +29,7 @@ export default function Home({ currentUser }) {
             .then(res => setPosts(res.data))
             .catch(err => {
                 console.error(err);
-                alert("Lỗi khi tải danh sách bài viết!");
+                message.error("Lỗi khi tải danh sách bài viết!");
             })
             .finally(() => setLoading(false));
     };
@@ -48,12 +49,19 @@ export default function Home({ currentUser }) {
     const handleDelete = (postId) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
             axios.delete(`http://localhost:9999/posts/${postId}`).then(() => {
-              alert(
-                  "Bài viết đã được xóa khỏi hệ thống."
-                );
+                notification.success({
+                    message: "🗑️ Đã xóa bài viết!",
+                    description: "Bài viết đã được xóa khỏi hệ thống.",
+                    duration: 3,
+                    placement: 'topRight',
+                    style: {
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                    }
+                });
                 fetchPosts();
             }).catch(() => {
-                alert("Lỗi khi xóa bài viết!");
+                message.error("Lỗi khi xóa bài viết!");
             });
         }
     };
@@ -65,6 +73,21 @@ export default function Home({ currentUser }) {
 
     const isLiked = (postId) => {
         return currentUser && likes.some(like => like.userId === currentUser.id && like.postId === postId);
+    };
+
+    const testNotifications = () => {
+        message.success("Test message thành công!");
+        message.error("Test message lỗi!");
+        notification.success({
+            message: "🎉 Test notification thành công!",
+            description: "Đây là test notification với emoji và styling đẹp.",
+            duration: 5,
+            placement: 'topRight',
+            style: {
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+            }
+        });
     };
 
     const handleLike = async (postId) => {
@@ -139,11 +162,10 @@ export default function Home({ currentUser }) {
         <div className="home-container">
             <div className="home-header">
                 <Title level={2}>📚 Danh sách bài viết</Title>
-                {currentUser && (
+                <Space>
                     <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => navigate("/create")}
+                        type="default"
+                        onClick={testNotifications}
                         size="large"
                         style={{
                             borderRadius: '8px',
@@ -153,9 +175,26 @@ export default function Home({ currentUser }) {
                             fontWeight: '500'
                         }}
                     >
-                        ✨ Tạo bài viết
+                        🧪 Test Notifications
                     </Button>
-                )}
+                    {currentUser && (
+                        <Button
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => navigate("/create")}
+                            size="large"
+                            style={{
+                                borderRadius: '8px',
+                                height: '48px',
+                                padding: '0 24px',
+                                fontSize: '16px',
+                                fontWeight: '500'
+                            }}
+                        >
+                            ✨ Tạo bài viết
+                        </Button>
+                    )}
+                </Space>
             </div>
 
             {currentUser && currentUser.role !== "admin" && (

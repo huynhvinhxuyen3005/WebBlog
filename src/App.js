@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
-import { Button, Layout, Menu, Avatar, Dropdown, Space, Typography, Badge } from "antd";
+import { Button, Layout, Menu, Avatar, Dropdown, Space, Typography, Badge, ConfigProvider, App as AntApp } from "antd";
 import {
     UserOutlined,
     LogoutOutlined,
@@ -58,8 +58,16 @@ function App() {
     ];
 
     return (
-        <Router>
-                         <Layout style={{ minHeight: '100vh', background: '#ffffff' }}>
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: '#1890ff',
+                },
+            }}
+        >
+            <AntApp>
+                <Router>
+                    <Layout style={{ minHeight: '100vh', background: '#ffffff' }}>
                 <Header
                     style={{
                         display: "flex",
@@ -223,6 +231,8 @@ function App() {
                 </Content>
             </Layout>
         </Router>
+            </AntApp>
+        </ConfigProvider>
     );
 }
 

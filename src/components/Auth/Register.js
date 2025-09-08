@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { Button, Form, Input, Typography,Card, } from "antd";
+import { Button, Form, Input, Typography, Card, App } from "antd";
 import { UserOutlined, LockOutlined, IdcardOutlined } from "@ant-design/icons";
 import "../style/Register.css";
 
 const { Title } = Typography;
 
 export default function Register({ setCurrentUser }) {
+    const { message, notification } = App.useApp();
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -16,8 +17,7 @@ export default function Register({ setCurrentUser }) {
         try {
             const res = await axios.get(`http://localhost:9999/users?username=${values.username}`);
             if (res.data.length > 0) {
-                alert("Tên đăng nhập đã tồn tại!");
-                setLoading(false);
+                message.error("Tên đăng nhập đã tồn tại!");
                 return;
             }
 
@@ -26,13 +26,25 @@ export default function Register({ setCurrentUser }) {
                 name: values.name,
                 username: values.username,
                 password: values.password,
+                role: "user"
             };
 
             await axios.post("http://localhost:9999/users", newUser);
             localStorage.setItem("user", JSON.stringify(newUser));
             setCurrentUser(newUser);
-            alert("Đăng ký tài khoản thành công")
-            navigate("/login")
+            notification.success({
+                message: "🎉 Đăng ký thành công!",
+                description: `Chào mừng ${newUser.name} đến với Blog System!`,
+                duration: 3,
+                placement: 'topRight',
+                style: {
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                }
+            });
+            navigate("/");
+        } catch (error) {
+            message.error("Lỗi khi đăng ký tài khoản!");
         } finally {
             setLoading(false);
         }
