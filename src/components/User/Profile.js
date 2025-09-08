@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Form, Input, Typography, Card, Avatar, Space, Divider, Row, Col, Tag, message, notification } from "antd";
-import { UserOutlined, SaveOutlined, EditOutlined, DeleteOutlined, PlusOutlined, HeartOutlined, MessageOutlined } from "@ant-design/icons";
+import { UserOutlined, SaveOutlined, EditOutlined, DeleteOutlined, PlusOutlined, LikeOutlined, MessageOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "../style/Home.css";
 import {useNavigate} from "react-router-dom";
@@ -277,7 +277,7 @@ export default function Profile({ currentUser, setCurrentUser }) {
                                             }}>
                                                 <Space size="small">
                                                     <Text type="secondary" style={{ fontSize: '12px' }}>
-                                                        ❤️ {post.likesCount || 0} likes
+                                                        👍 {post.likesCount || 0} likes
                                                     </Text>
                                                     <Text type="secondary" style={{ fontSize: '12px' }}>
                                                         💬 {post.commentsCount || 0} bình luận

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Card, Typography, Divider, List, Avatar, Button, Input, message, Tag, Space, Spin, notification } from 'antd';
-import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, UserOutlined, MessageOutlined, CheckCircleOutlined, HeartOutlined, HeartFilled } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, ArrowLeftOutlined, UserOutlined, MessageOutlined, CheckCircleOutlined, LikeOutlined, LikeFilled } from '@ant-design/icons';
 import moment from 'moment';
 import '../style/PostDetail.css';
 
@@ -96,7 +96,7 @@ export default function PostDetail({ currentUser }) {
                 await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
                 setPost(updatedPost);
                 notification.success({
-                    message: "💔 Đã bỏ like",
+                    message: "👎 Đã bỏ like",
                     description: "Bạn đã bỏ like bài viết này.",
                     duration: 2
                 });
@@ -115,7 +115,7 @@ export default function PostDetail({ currentUser }) {
                 await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
                 setPost(updatedPost);
                 notification.success({
-                    message: "❤️ Đã like",
+                    message: "👍 Đã like",
                     description: "Bạn đã like bài viết này.",
                     duration: 2
                 });
@@ -310,10 +310,10 @@ export default function PostDetail({ currentUser }) {
                             <Button
                                 type="text"
                                 size="large"
-                                icon={isLiked() ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />}
+                                icon={isLiked() ? <LikeFilled style={{ color: '#1890ff' }} /> : <LikeOutlined />}
                                 onClick={handleLike}
                                 style={{ 
-                                    color: isLiked() ? '#ff4d4f' : '#8c8c8c',
+                                    color: isLiked() ? '#1890ff' : '#8c8c8c',
                                     fontSize: '16px',
                                     fontWeight: '500'
                                 }}
@@ -322,7 +322,7 @@ export default function PostDetail({ currentUser }) {
                             </Button>
                         ) : (
                             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                <HeartOutlined style={{ color: '#8c8c8c', fontSize: '16px' }} />
+                                <LikeOutlined style={{ color: '#8c8c8c', fontSize: '16px' }} />
                                 <Text style={{ color: '#8c8c8c', fontSize: '16px' }}>
                                     {post.likesCount || 0} likes
                                 </Text>

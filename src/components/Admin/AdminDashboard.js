@@ -153,7 +153,7 @@ export default function AdminDashboard({ currentUser }) {
             title: 'Likes',
             dataIndex: 'likesCount',
             key: 'likesCount',
-            render: (count) => <Text>❤️ {count || 0}</Text>
+            render: (count) => <Text>👍 {count || 0}</Text>
         },
         {
             title: 'Comments',

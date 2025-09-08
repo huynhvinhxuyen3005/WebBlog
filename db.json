@@ -32,7 +32,26 @@
       "visibility": "public",
       "likesCount": 5,
       "commentsCount": 3,
-      "comments": []
+      "comments": [
+        {
+          "id": "c1",
+          "userId": "u1",
+          "content": "Bài viết rất hữu ích, cảm ơn bạn!",
+          "createdAt": "2024-07-01T10:30:00Z"
+        },
+        {
+          "id": "c2",
+          "userId": "u3",
+          "content": "Mình đã áp dụng và thấy hiệu quả rõ rệt!",
+          "createdAt": "2024-07-01T15:45:00Z"
+        },
+        {
+          "id": "c3",
+          "userId": "u2",
+          "content": "Cảm ơn bạn đã chia sẻ kinh nghiệm!",
+          "createdAt": "2024-07-02T08:20:00Z"
+        }
+      ]
     },
     {
       "id": "p2",
@@ -41,8 +60,22 @@
       "authorId": "u3",
       "createdAt": "2024-07-02T14:30:00Z",
       "visibility": "public",
-      "likesCount": 8,
-      "commentsCount": 2
+      "likesCount": 7,
+      "commentsCount": 2,
+      "comments": [
+        {
+          "id": "c4",
+          "userId": "u1",
+          "content": "SEO thực sự quan trọng cho blog!",
+          "createdAt": "2024-07-02T16:00:00Z"
+        },
+        {
+          "id": "c5",
+          "userId": "u2",
+          "content": "Mình sẽ thử áp dụng những tips này.",
+          "createdAt": "2024-07-03T09:30:00Z"
+        }
+      ]
     },
     {
       "id": "p3",
@@ -52,7 +85,39 @@
       "createdAt": "2024-07-03T11:15:00Z",
       "visibility": "public",
       "likesCount": 12,
-      "commentsCount": 5
+      "commentsCount": 5,
+      "comments": [
+        {
+          "id": "c6",
+          "userId": "u2",
+          "content": "WordPress vẫn là lựa chọn tốt nhất!",
+          "createdAt": "2024-07-03T12:00:00Z"
+        },
+        {
+          "id": "c7",
+          "userId": "u3",
+          "content": "Medium cũng rất tốt cho việc viết.",
+          "createdAt": "2024-07-03T13:15:00Z"
+        },
+        {
+          "id": "c8",
+          "userId": "u1",
+          "content": "Ghost có giao diện rất đẹp và hiện đại.",
+          "createdAt": "2024-07-03T14:30:00Z"
+        },
+        {
+          "id": "c9",
+          "userId": "u2",
+          "content": "Blogger của Google rất dễ sử dụng cho người mới.",
+          "createdAt": "2024-07-03T15:45:00Z"
+        },
+        {
+          "id": "c10",
+          "userId": "u3",
+          "content": "Wix có nhiều template đẹp nhưng hơi nặng.",
+          "createdAt": "2024-07-03T16:00:00Z"
+        }
+      ]
     }
   ],
   "likes": [
@@ -65,11 +130,6 @@
       "id": "l2",
       "userId": "u3",
       "postId": "p1"
-    },
-    {
-      "id": "l3",
-      "userId": "u1",
-      "postId": "p2"
     },
     {
       "id": "l4",
@@ -95,6 +155,11 @@
       "id": "l8",
       "userId": "u3",
       "postId": "p3"
+    },
+    {
+      "id": "1757339562719",
+      "userId": "u1",
+      "postId": "p2"
     }
   ],
   "comments": [

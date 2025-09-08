@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Button, Card, Select, Row, Col, Typography, Avatar, Tag, Space, message, notification } from "antd";
 import { useNavigate } from "react-router-dom";
-import { EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined, HeartOutlined, HeartFilled, MessageOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined, LikeOutlined, LikeFilled, MessageOutlined } from "@ant-design/icons";
 import moment from "moment";
 import "../style/Home.css";
 
@@ -107,7 +107,7 @@ export default function Home({ currentUser }) {
                     });
                 }
                 notification.success({
-                    message: "❤️ Đã like",
+                    message: "👍 Đã like",
                     description: "Bạn đã like bài viết này.",
                     duration: 2
                 });
@@ -233,12 +233,12 @@ export default function Home({ currentUser }) {
                                     <Button
                                         key="like"
                                         type="text"
-                                        icon={isLiked(post.id) ? <HeartFilled style={{ color: '#ff4d4f' }} /> : <HeartOutlined />}
+                                        icon={isLiked(post.id) ? <LikeFilled style={{ color: '#1890ff' }} /> : <LikeOutlined />}
                                         onClick={(e) => {
                                             e.stopPropagation();
                                             handleLike(post.id);
                                         }}
-                                        style={{ color: isLiked(post.id) ? '#ff4d4f' : '#8c8c8c' }}
+                                        style={{ color: isLiked(post.id) ? '#1890ff' : '#8c8c8c' }}
                                     >
                                         {post.likesCount || 0}
                                     </Button>
@@ -289,7 +289,7 @@ export default function Home({ currentUser }) {
                                 <div style={{ marginTop: 8, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Space size="small">
                                         <Text type="secondary" style={{ fontSize: 12 }}>
-                                            ❤️ {post.likesCount || 0} likes
+                                            👍 {post.likesCount || 0} likes
                                         </Text>
                                         <Text type="secondary" style={{ fontSize: 12 }}>
                                             💬 {post.commentsCount || 0} bình luận
