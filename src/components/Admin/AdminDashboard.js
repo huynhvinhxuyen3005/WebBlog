@@ -1,13 +1,44 @@
 import { useEffect, useState } from "react";
-import { Card, Table, Button, Space, Tag, Typography, Row, Col, Statistic, message, Popconfirm } from "antd";
-import { EditOutlined, DeleteOutlined, UserOutlined, FileTextOutlined, MessageOutlined, EyeOutlined } from "@ant-design/icons";
+import {
+    Card, Table, Button, Space, Tag, Typography,
+    Row, Col, Statistic, Popconfirm, App
+} from "antd";
+import {
+    EditOutlined, DeleteOutlined, UserOutlined,
+    FileTextOutlined, MessageOutlined, EyeOutlined
+} from "@ant-design/icons";
 import axios from "axios";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
+/**
+ * Nút Xóa tái sử dụng với Popconfirm
+ */
+function ConfirmDeleteButton({ onConfirm, disabled, children, title }) {
+    return (
+        <Popconfirm
+            title={title || "Bạn có chắc chắn muốn xóa mục này?"}
+            onConfirm={onConfirm}
+            okText="Có"
+            cancelText="Không"
+            disabled={disabled}
+        >
+            <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                disabled={disabled}
+            >
+                {children || "Xóa"}
+            </Button>
+        </Popconfirm>
+    );
+}
+
 export default function AdminDashboard({ currentUser }) {
+    const { message } = App.useApp(); // ✅ lấy message từ context
     const [users, setUsers] = useState([]);
     const [posts, setPosts] = useState([]);
     const [comments, setComments] = useState([]);
@@ -27,57 +58,56 @@ export default function AdminDashboard({ currentUser }) {
             axios.get("http://localhost:9999/posts?_sort=createdAt&_order=desc"),
             axios.get("http://localhost:9999/comments?_sort=createdAt&_order=desc")
         ])
-        .then(([usersRes, postsRes, commentsRes]) => {
-            setUsers(usersRes.data);
-            setPosts(postsRes.data);
-            setComments(commentsRes.data);
-        })
-        .catch(err => {
-            console.error(err);
-            message.error('Lỗi khi tải dữ liệu!');
-        })
-        .finally(() => setLoading(false));
+            .then(([usersRes, postsRes, commentsRes]) => {
+                setUsers(usersRes.data);
+                setPosts(postsRes.data);
+                setComments(commentsRes.data);
+            })
+            .catch(() => {
+                message.error("Lỗi khi tải dữ liệu!");
+            })
+            .finally(() => setLoading(false));
     };
 
     const handleDeleteUser = (userId) => {
         axios.delete(`http://localhost:9999/users/${userId}`)
             .then(() => {
-                message.success('Đã xóa người dùng!');
+                message.success("Đã xóa người dùng!");
                 fetchAllData();
             })
             .catch(() => {
-                message.error('Lỗi khi xóa người dùng!');
+                message.error("Lỗi khi xóa người dùng!");
             });
     };
 
     const handleDeletePost = (postId) => {
         axios.delete(`http://localhost:9999/posts/${postId}`)
             .then(() => {
-                message.success('Đã xóa bài viết!');
+                message.success("Đã xóa bài viết!");
                 fetchAllData();
             })
             .catch(() => {
-                message.error('Lỗi khi xóa bài viết!');
+                message.error("Lỗi khi xóa bài viết!");
             });
     };
 
     const handleDeleteComment = (commentId) => {
         axios.delete(`http://localhost:9999/comments/${commentId}`)
             .then(() => {
-                message.success('Đã xóa bình luận!');
+                message.success("Đã xóa bình luận!");
                 fetchAllData();
             })
             .catch(() => {
-                message.error('Lỗi khi xóa bình luận!');
+                message.error("Lỗi khi xóa bình luận!");
             });
     };
 
     const userColumns = [
         {
-            title: 'Tên',
-            dataIndex: 'name',
-            key: 'name',
-            render: (text, record) => (
+            title: "Tên",
+            dataIndex: "name",
+            key: "name",
+            render: (text) => (
                 <Space>
                     <UserOutlined />
                     <span>{text}</span>
@@ -85,131 +115,115 @@ export default function AdminDashboard({ currentUser }) {
             )
         },
         {
-            title: 'Username',
-            dataIndex: 'username',
-            key: 'username',
+            title: "Username",
+            dataIndex: "username",
+            key: "username"
         },
         {
-            title: 'Vai trò',
-            dataIndex: 'role',
-            key: 'role',
+            title: "Vai trò",
+            dataIndex: "role",
+            key: "role",
             render: (role) => (
-                <Tag color={role === 'admin' ? 'red' : 'blue'}>
-                    {role === 'admin' ? '👑 Admin' : '👤 User'}
+                <Tag color={role === "admin" ? "red" : "blue"}>
+                    {role === "admin" ? "👑 Admin" : "👤 User"}
                 </Tag>
             )
         },
         {
-            title: 'Hành động',
-            key: 'action',
+            title: "Hành động",
+            key: "action",
             render: (_, record) => (
-                <Space size="middle">
-                    <Button 
-                        type="text" 
-                        danger
-                        icon={<DeleteOutlined />}
-                        onClick={() => handleDeleteUser(record.id)}
-                        disabled={record.id === currentUser.id}
-                    >
-                        Xóa
-                    </Button>
-                </Space>
-            ),
-        },
+                <ConfirmDeleteButton
+                    title="Bạn có chắc chắn muốn xóa người dùng này?"
+                    onConfirm={() => handleDeleteUser(record.id)}
+                    disabled={record.id === currentUser.id}
+                />
+            )
+        }
     ];
 
     const postColumns = [
         {
-            title: 'Tiêu đề',
-            dataIndex: 'title',
-            key: 'title',
-            render: (text, record) => (
+            title: "Tiêu đề",
+            dataIndex: "title",
+            key: "title",
+            render: (text) => (
                 <Space>
                     <FileTextOutlined />
-                    <span style={{ fontWeight: 'bold', color: '#1890ff' }}>{text}</span>
+                    <span style={{ fontWeight: "bold", color: "#1890ff" }}>{text}</span>
                 </Space>
             )
         },
         {
-            title: 'Tác giả',
-            dataIndex: 'authorId',
-            key: 'authorId',
+            title: "Tác giả",
+            dataIndex: "authorId",
+            key: "authorId",
             render: (authorId) => {
-                const author = users.find(u => u.id === authorId);
-                return author ? author.name : 'Unknown';
+                const author = users.find((u) => u.id === authorId);
+                return author ? author.name : "Unknown";
             }
         },
         {
-            title: 'Trạng thái',
-            dataIndex: 'visibility',
-            key: 'visibility',
+            title: "Trạng thái",
+            dataIndex: "visibility",
+            key: "visibility",
             render: (visibility) => (
-                <Tag color={visibility === 'public' ? 'green' : 'orange'}>
-                    {visibility === 'public' ? '🌍 Công khai' : '🔐 Riêng tư'}
+                <Tag color={visibility === "public" ? "green" : "orange"}>
+                    {visibility === "public" ? "🌍 Công khai" : "🔐 Riêng tư"}
                 </Tag>
             )
         },
         {
-            title: 'Likes',
-            dataIndex: 'likesCount',
-            key: 'likesCount',
+            title: "Likes",
+            dataIndex: "likesCount",
+            key: "likesCount",
             render: (count) => <Text>👍 {count || 0}</Text>
         },
         {
-            title: 'Comments',
-            dataIndex: 'commentsCount',
-            key: 'commentsCount',
+            title: "Comments",
+            dataIndex: "commentsCount",
+            key: "commentsCount",
             render: (count) => <Text>💬 {count || 0}</Text>
         },
         {
-            title: 'Ngày tạo',
-            dataIndex: 'createdAt',
-            key: 'createdAt',
-            render: (date) => moment(date).format('DD/MM/YYYY HH:mm')
+            title: "Ngày tạo",
+            dataIndex: "createdAt",
+            key: "createdAt",
+            render: (date) => moment(date).format("DD/MM/YYYY HH:mm")
         },
         {
-            title: 'Hành động',
-            key: 'action',
+            title: "Hành động",
+            key: "action",
             render: (_, record) => (
                 <Space size="middle">
-                    <Button 
-                        type="text" 
+                    <Button
+                        type="text"
                         icon={<EyeOutlined />}
                         onClick={() => navigate(`/post/${record.id}`)}
                     >
                         Xem
                     </Button>
-                    <Button 
-                        type="text" 
+                    <Button
+                        type="text"
                         icon={<EditOutlined />}
                         onClick={() => navigate(`/edit/${record.id}`)}
                     >
                         Sửa
                     </Button>
-                    <Popconfirm
+                    <ConfirmDeleteButton
                         title="Bạn có chắc chắn muốn xóa bài viết này?"
                         onConfirm={() => handleDeletePost(record.id)}
-                        okText="Có"
-                        cancelText="Không"
-                    >
-                        <Button 
-                            type="text" 
-                            danger
-                            icon={<DeleteOutlined />}
-                        >
-                            Xóa
-                        </Button>
-                    </Popconfirm>
+                    />
                 </Space>
-            ),
-        },
+            )
+        }
     ];
 
     const commentColumns = [
         {
-            title: 'Nội dung',
-            dataIndex: 'content',
-            key: 'content',
+            title: "Nội dung",
+            dataIndex: "content",
+            key: "content",
             render: (text) => (
                 <div style={{ maxWidth: 300 }}>
                     <Text ellipsis>{text}</Text>
@@ -217,74 +231,67 @@ export default function AdminDashboard({ currentUser }) {
             )
         },
         {
-            title: 'Người bình luận',
-            dataIndex: 'userId',
-            key: 'userId',
+            title: "Người bình luận",
+            dataIndex: "userId",
+            key: "userId",
             render: (userId) => {
-                const user = users.find(u => u.id === userId);
-                return user ? user.name : 'Unknown';
+                const user = users.find((u) => u.id === userId);
+                return user ? user.name : "Unknown";
             }
         },
         {
-            title: 'Bài viết',
-            dataIndex: 'postId',
-            key: 'postId',
+            title: "Bài viết",
+            dataIndex: "postId",
+            key: "postId",
             render: (postId) => {
-                const post = posts.find(p => p.id === postId);
+                const post = posts.find((p) => p.id === postId);
                 return post ? (
-                    <Button 
-                        type="link" 
+                    <Button
+                        type="link"
                         onClick={() => navigate(`/post/${postId}`)}
-                        style={{ padding: 0, height: 'auto' }}
+                        style={{ padding: 0, height: "auto" }}
                     >
                         {post.title}
                     </Button>
-                ) : 'Unknown';
+                ) : (
+                    "Unknown"
+                );
             }
         },
         {
-            title: 'Ngày tạo',
-            dataIndex: 'createdAt',
-            key: 'createdAt',
-            render: (date) => moment(date).format('DD/MM/YYYY HH:mm')
+            title: "Ngày tạo",
+            dataIndex: "createdAt",
+            key: "createdAt",
+            render: (date) => moment(date).format("DD/MM/YYYY HH:mm")
         },
         {
-            title: 'Hành động',
-            key: 'action',
+            title: "Hành động",
+            key: "action",
             render: (_, record) => (
-                <Popconfirm
+                <ConfirmDeleteButton
                     title="Bạn có chắc chắn muốn xóa bình luận này?"
                     onConfirm={() => handleDeleteComment(record.id)}
-                    okText="Có"
-                    cancelText="Không"
-                >
-                    <Button 
-                        type="text" 
-                        danger
-                        icon={<DeleteOutlined />}
-                    >
-                        Xóa
-                    </Button>
-                </Popconfirm>
-            ),
-        },
+                />
+            )
+        }
     ];
 
     if (!currentUser || currentUser.role !== "admin") {
         return (
-            <div style={{ textAlign: 'center', padding: 40 }}>
+            <div style={{ textAlign: "center", padding: 40 }}>
                 <Text type="secondary">Bạn không có quyền truy cập trang này!</Text>
             </div>
         );
     }
 
     return (
-        <div style={{ padding: '24px' }}>
+        <div style={{ padding: "24px" }}>
             <div style={{ marginBottom: 24 }}>
                 <Title level={2}>👑 Bảng điều khiển Admin</Title>
                 <Text type="secondary">Quản lý toàn bộ hệ thống blog</Text>
             </div>
 
+            {/* Stats */}
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={24} sm={8}>
                     <Card>
@@ -292,7 +299,7 @@ export default function AdminDashboard({ currentUser }) {
                             title="Tổng người dùng"
                             value={users.length}
                             prefix={<UserOutlined />}
-                            valueStyle={{ color: '#1890ff' }}
+                            valueStyle={{ color: "#1890ff" }}
                         />
                     </Card>
                 </Col>
@@ -302,7 +309,7 @@ export default function AdminDashboard({ currentUser }) {
                             title="Tổng bài viết"
                             value={posts.length}
                             prefix={<FileTextOutlined />}
-                            valueStyle={{ color: '#52c41a' }}
+                            valueStyle={{ color: "#52c41a" }}
                         />
                     </Card>
                 </Col>
@@ -312,17 +319,18 @@ export default function AdminDashboard({ currentUser }) {
                             title="Tổng bình luận"
                             value={comments.length}
                             prefix={<MessageOutlined />}
-                            valueStyle={{ color: '#faad14' }}
+                            valueStyle={{ color: "#faad14" }}
                         />
                     </Card>
                 </Col>
             </Row>
 
+            {/* Users + Posts */}
             <Row gutter={[16, 16]}>
                 <Col xs={24} lg={8}>
-                    <Card 
-                        title="👥 Quản lý người dùng" 
-                        style={{ height: '100%' }}
+                    <Card
+                        title="👥 Quản lý người dùng"
+                        style={{ height: "100%" }}
                         extra={<Tag color="blue">{users.length} người dùng</Tag>}
                     >
                         <Table
@@ -337,9 +345,9 @@ export default function AdminDashboard({ currentUser }) {
                 </Col>
 
                 <Col xs={24} lg={16}>
-                    <Card 
-                        title="📝 Quản lý bài viết" 
-                        style={{ height: '100%' }}
+                    <Card
+                        title="📝 Quản lý bài viết"
+                        style={{ height: "100%" }}
                         extra={<Tag color="green">{posts.length} bài viết</Tag>}
                     >
                         <Table
@@ -355,10 +363,11 @@ export default function AdminDashboard({ currentUser }) {
                 </Col>
             </Row>
 
+            {/* Comments */}
             <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
                 <Col xs={24}>
-                    <Card 
-                        title="💬 Quản lý bình luận" 
+                    <Card
+                        title="💬 Quản lý bình luận"
                         extra={<Tag color="orange">{comments.length} bình luận</Tag>}
                     >
                         <Table
@@ -376,4 +385,3 @@ export default function AdminDashboard({ currentUser }) {
         </div>
     );
 }
-
