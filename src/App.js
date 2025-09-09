@@ -150,8 +150,9 @@ function App() {
                                     <Badge count={0} size="small">
                                         <Avatar
                                             size={36}
+                                            src={currentUser.avatar || null}
                                             style={{
-                                                backgroundColor: '#3498db',
+                                                backgroundColor: currentUser.role === 'admin' ? '#ff4d4f' : '#3498db',
                                                 border: '2px solid rgba(255,255,255,0.3)'
                                             }}
                                         >

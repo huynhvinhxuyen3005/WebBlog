@@ -5,21 +5,32 @@
       "name": "Admin Blog",
       "username": "admin",
       "password": "123",
-      "role": "admin"
+      "role": "admin",
+      "avatar": "https://scontent.fsgn2-9.fna.fbcdn.net/v/t39.30808-6/545233329_4007709612785632_8170483761064404369_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeH4-O0639GfYZnOeORUs31aRfndggjOlBRF-d2CCM6UFKxbkHS6kZJQsiF9kqbubf3ncsG4oHS1O-v6WJybL9vb&_nc_ohc=ne30LNH9qtgQ7kNvwHm106t&_nc_oc=AdnhF6kiapVv6bwjz-Bh0VW2oHY1qe3AnqZqIqHrKGBE2HLn7SEp7wQhIZ48-tXC9Reox7V63rGkEbVum7PzIfO6&_nc_zt=23&_nc_ht=scontent.fsgn2-9.fna&_nc_gid=7CNk4F5-Hw3lc8Vr5HKXzw&oh=00_AfYzPHLCky98jUdq0xVAr96IJFTWeDcDu8ZMiFoyDz7IFg&oe=68C5F09F"
     },
     {
       "id": "u2",
       "name": "Trần Thị Viết Lách",
       "username": "user1",
       "password": "123",
-      "role": "user"
+      "role": "user",
+      "avatar": ""
     },
     {
       "id": "u3",
       "name": "Nguyễn Văn Blogger",
       "username": "user2",
       "password": "123",
-      "role": "user"
+      "role": "user",
+      "avatar": ""
+    },
+    {
+      "id": "1757421899322",
+      "name": "Huỳnh Vĩnh Xuyên",
+      "username": "xuyenhv3005",
+      "password": "300599",
+      "role": "user",
+      "avatar": "https://scontent.fsgn2-9.fna.fbcdn.net/v/t39.30808-6/545233329_4007709612785632_8170483761064404369_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=6ee11a&_nc_eui2=AeH4-O0639GfYZnOeORUs31aRfndggjOlBRF-d2CCM6UFKxbkHS6kZJQsiF9kqbubf3ncsG4oHS1O-v6WJybL9vb&_nc_ohc=ne30LNH9qtgQ7kNvwHm106t&_nc_oc=AdnhF6kiapVv6bwjz-Bh0VW2oHY1qe3AnqZqIqHrKGBE2HLn7SEp7wQhIZ48-tXC9Reox7V63rGkEbVum7PzIfO6&_nc_zt=23&_nc_ht=scontent.fsgn2-9.fna&_nc_gid=7CNk4F5-Hw3lc8Vr5HKXzw&oh=00_AfYzPHLCky98jUdq0xVAr96IJFTWeDcDu8ZMiFoyDz7IFg&oe=68C5F09F"
     }
   ],
   "posts": [

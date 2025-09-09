@@ -207,7 +207,14 @@ export default function PostDetail({ currentUser }) {
                 <div style={{ marginBottom: 16 }}>
                     <Space size="middle">
                         <Space size="small">
-                            <Avatar size="small" icon={<UserOutlined />} />
+                            <Avatar 
+                                size="small" 
+                                src={users.find(u => u.id === post.authorId)?.avatar || null}
+                                icon={<UserOutlined />}
+                                style={{ 
+                                    background: users.find(u => u.id === post.authorId)?.role === 'admin' ? '#ff4d4f' : '#1890ff'
+                                }}
+                            />
                             <Text type="secondary">{getAuthorName(post.authorId)}</Text>
                         </Space>
                         <Text type="secondary">📅 {moment(post.createdAt).format('DD/MM/YYYY HH:mm')}</Text>
@@ -275,7 +282,14 @@ export default function PostDetail({ currentUser }) {
                     locale={{ emptyText: 'Chưa có bình luận nào' }}
                     renderItem={comment => (
                         <div key={comment.id} className="comment-item">
-                            <Avatar style={{ backgroundColor: '#87d068' }}>{getCommentUser(comment.userId)[0]}</Avatar>
+                            <Avatar 
+                                src={users.find(u => u.id === comment.userId)?.avatar || null}
+                                style={{ 
+                                    backgroundColor: users.find(u => u.id === comment.userId)?.role === 'admin' ? '#ff4d4f' : '#87d068'
+                                }}
+                            >
+                                {getCommentUser(comment.userId)[0]}
+                            </Avatar>
                             <div className="comment-content">
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                     <Text strong>{getCommentUser(comment.userId)}</Text>

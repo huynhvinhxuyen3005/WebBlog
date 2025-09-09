@@ -238,7 +238,14 @@ export default function Home({ currentUser }) {
                                         {post.title}
                                     </div>
                                     <Space size="small">
-                                        <Avatar size="small" icon={<UserOutlined />} />
+                                        <Avatar 
+                                            size="small" 
+                                            src={users.find(u => u.id === post.authorId)?.avatar || null}
+                                            icon={<UserOutlined />}
+                                            style={{ 
+                                                background: users.find(u => u.id === post.authorId)?.role === 'admin' ? '#ff4d4f' : '#1890ff'
+                                            }}
+                                        />
                                         <Text type="secondary" style={{ fontSize: 12 }}>
                                             {getAuthorName(post.authorId)}
                                         </Text>

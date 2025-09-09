@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Form, Input, Typography, Card, Avatar, Space, Divider, Row, Col, Tag, message, notification } from "antd";
-import { UserOutlined, SaveOutlined, EditOutlined, DeleteOutlined, PlusOutlined, LikeOutlined, MessageOutlined } from "@ant-design/icons";
+import { Button, Form, Input, Typography, Card, Avatar, Space, Divider, Row, Col, Tag, message, App } from "antd";
+import { UserOutlined, SaveOutlined, EditOutlined, DeleteOutlined, PlusOutlined, LikeOutlined, MessageOutlined, UploadOutlined, LinkOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "../style/Home.css";
 import {useNavigate} from "react-router-dom";
@@ -9,6 +9,7 @@ import moment from "moment";
 const { Title, Text } = Typography;
 
 export default function Profile({ currentUser, setCurrentUser }) {
+    const { notification } = App.useApp();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
     const [userPosts, setUserPosts] = useState([]);
@@ -20,6 +21,7 @@ export default function Profile({ currentUser, setCurrentUser }) {
                 name: currentUser.name || "",
                 username: currentUser.username || "",
                 password: "",
+                avatar: currentUser.avatar || "",
             });
             fetchUserPosts();
         }
@@ -42,6 +44,7 @@ export default function Profile({ currentUser, setCurrentUser }) {
             const updateData = {
                 name: values.name,
                 username: values.username,
+                avatar: values.avatar || "",
             };
             if (values.password) {
                 updateData.password = values.password;
@@ -55,9 +58,19 @@ export default function Profile({ currentUser, setCurrentUser }) {
             notification.success({
                 message: "✅ Cập nhật thành công!",
                 description: "Thông tin cá nhân đã được cập nhật.",
-                duration: 3
+                duration: 3,
+                placement: "topRight",
+                style: {
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }
             });
             form.setFieldsValue({ password: "" }); // Reset password field
+            
+            // Tự động quay về trang Home sau 2 giây
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
         } catch (error) {
             message.error("Cập nhật thất bại! Vui lòng thử lại.");
         } finally {
@@ -90,6 +103,7 @@ export default function Profile({ currentUser, setCurrentUser }) {
                         <div style={{ textAlign: 'center', marginBottom: 24 }}>
                             <Avatar 
                                 size={80} 
+                                src={currentUser?.avatar || null}
                                 icon={<UserOutlined />} 
                                 style={{ 
                                     marginBottom: 16,
@@ -117,6 +131,7 @@ export default function Profile({ currentUser, setCurrentUser }) {
                         name: currentUser?.name || "",
                         username: currentUser?.username || "",
                         password: "",
+                        avatar: currentUser?.avatar || "",
                     }}
                 >
                     <Form.Item
@@ -149,6 +164,18 @@ export default function Profile({ currentUser, setCurrentUser }) {
                         ]}
                     >
                         <Input.Password placeholder="Để trống nếu không muốn thay đổi mật khẩu" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Ảnh đại diện (URL)"
+                        name="avatar"
+                        extra="Nhập URL ảnh từ internet (ví dụ: https://example.com/avatar.jpg)"
+                    >
+                        <Input 
+                            placeholder="https://example.com/avatar.jpg"
+                            prefix={<LinkOutlined />}
+                            style={{ borderRadius: '8px' }}
+                        />
                     </Form.Item>
 
                     <Divider />

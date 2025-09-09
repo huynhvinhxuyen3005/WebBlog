@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import {
     Card, Table, Button, Space, Tag, Typography,
-    Row, Col, Statistic, Popconfirm, App
+    Row, Col, Statistic, Popconfirm, App, Modal, Form, Input, Avatar
 } from "antd";
 import {
     EditOutlined, DeleteOutlined, UserOutlined,
-    FileTextOutlined, MessageOutlined, EyeOutlined
+    FileTextOutlined, MessageOutlined, EyeOutlined, LinkOutlined
 } from "@ant-design/icons";
 import axios from "axios";
 import moment from "moment";
@@ -43,6 +43,9 @@ export default function AdminDashboard({ currentUser }) {
     const [posts, setPosts] = useState([]);
     const [comments, setComments] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+    const [form] = Form.useForm();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -102,14 +105,62 @@ export default function AdminDashboard({ currentUser }) {
             });
     };
 
+    const handleEditUser = (user) => {
+        setEditingUser(user);
+        form.setFieldsValue({
+            name: user.name,
+            username: user.username,
+            avatar: user.avatar || "",
+        });
+        setEditModalVisible(true);
+    };
+
+    const handleUpdateUser = async (values) => {
+        try {
+            const updateData = {
+                ...editingUser,
+                name: values.name,
+                username: values.username,
+                avatar: values.avatar || "",
+            };
+
+            await axios.put(`http://localhost:9999/users/${editingUser.id}`, updateData);
+            message.success({
+                content: "✅ Cập nhật thông tin người dùng thành công!",
+                style: {
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }
+            });
+            setEditModalVisible(false);
+            setEditingUser(null);
+            form.resetFields();
+            fetchAllData();
+            
+            // Tự động quay về trang Home sau 2 giây
+            setTimeout(() => {
+                navigate('/');
+            }, 2000);
+        } catch (error) {
+            message.error("Cập nhật thất bại! Vui lòng thử lại.");
+        }
+    };
+
     const userColumns = [
         {
             title: "Tên",
             dataIndex: "name",
             key: "name",
-            render: (text) => (
+            render: (text, record) => (
                 <Space>
-                    <UserOutlined />
+                    <Avatar 
+                        size="small" 
+                        src={record.avatar || null}
+                        icon={<UserOutlined />}
+                        style={{ 
+                            background: record.role === 'admin' ? '#ff4d4f' : '#1890ff'
+                        }}
+                    />
                     <span>{text}</span>
                 </Space>
             )
@@ -133,11 +184,21 @@ export default function AdminDashboard({ currentUser }) {
             title: "Hành động",
             key: "action",
             render: (_, record) => (
-                <ConfirmDeleteButton
-                    title="Bạn có chắc chắn muốn xóa người dùng này?"
-                    onConfirm={() => handleDeleteUser(record.id)}
-                    disabled={record.id === currentUser.id}
-                />
+                <Space size="middle">
+                    <Button
+                        type="text"
+                        icon={<EditOutlined />}
+                        onClick={() => handleEditUser(record)}
+                        style={{ color: '#1890ff' }}
+                    >
+                        Sửa
+                    </Button>
+                    <ConfirmDeleteButton
+                        title="Bạn có chắc chắn muốn xóa người dùng này?"
+                        onConfirm={() => handleDeleteUser(record.id)}
+                        disabled={record.id === currentUser.id}
+                    />
+                </Space>
             )
         }
     ];
@@ -382,6 +443,87 @@ export default function AdminDashboard({ currentUser }) {
                     </Card>
                 </Col>
             </Row>
+
+            {/* Edit User Modal */}
+            <Modal
+                title="Chỉnh sửa thông tin người dùng"
+                open={editModalVisible}
+                onCancel={() => {
+                    setEditModalVisible(false);
+                    setEditingUser(null);
+                    form.resetFields();
+                }}
+                footer={null}
+                width={500}
+            >
+                <Form
+                    form={form}
+                    layout="vertical"
+                    onFinish={handleUpdateUser}
+                >
+                    <div style={{ textAlign: 'center', marginBottom: 24 }}>
+                        <Avatar 
+                            size={60} 
+                            src={editingUser?.avatar || null}
+                            icon={<UserOutlined />}
+                            style={{ 
+                                background: editingUser?.role === 'admin' ? '#ff4d4f' : '#1890ff',
+                                border: '2px solid #fff',
+                                boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                            }} 
+                        />
+                    </div>
+
+                    <Form.Item
+                        label="Họ và tên"
+                        name="name"
+                        rules={[
+                            { required: true, message: "Vui lòng nhập họ và tên!" },
+                            { min: 2, message: "Họ và tên phải có ít nhất 2 ký tự!" }
+                        ]}
+                    >
+                        <Input placeholder="Nhập họ và tên" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Tên đăng nhập"
+                        name="username"
+                        rules={[
+                            { required: true, message: "Vui lòng nhập tên đăng nhập!" },
+                            { min: 3, message: "Tên đăng nhập phải có ít nhất 3 ký tự!" }
+                        ]}
+                    >
+                        <Input placeholder="Nhập tên đăng nhập" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Ảnh đại diện (URL)"
+                        name="avatar"
+                        extra="Nhập URL ảnh từ internet (ví dụ: https://example.com/avatar.jpg)"
+                    >
+                        <Input 
+                            placeholder="https://example.com/avatar.jpg"
+                            prefix={<LinkOutlined />}
+                            style={{ borderRadius: '8px' }}
+                        />
+                    </Form.Item>
+
+                    <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+                        <Space>
+                            <Button onClick={() => {
+                                setEditModalVisible(false);
+                                setEditingUser(null);
+                                form.resetFields();
+                            }}>
+                                Hủy
+                            </Button>
+                            <Button type="primary" htmlType="submit" style={{ borderRadius: '8px' }}>
+                                Cập nhật
+                            </Button>
+                        </Space>
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 }
