@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Form, Input, Typography, Card, Avatar, Space, Divider, Row, Col, Tag, message, App } from "antd";
+import { Button, Form, Input, Typography, Card, Avatar, Space, Divider, Row, Col, Tag, message, App, Upload } from "antd";
 import { UserOutlined, SaveOutlined, EditOutlined, DeleteOutlined, PlusOutlined, LikeOutlined, MessageOutlined, UploadOutlined, LinkOutlined } from "@ant-design/icons";
 import axios from "axios";
 import "../style/Home.css";
@@ -14,6 +14,13 @@ export default function Profile({ currentUser, setCurrentUser }) {
     const [loading, setLoading] = useState(false);
     const [userPosts, setUserPosts] = useState([]);
     const [postsLoading, setPostsLoading] = useState(false);
+    const [imagePreview, setImagePreview] = useState(null);
+    const [formData, setFormData] = useState({
+        name: "",
+        username: "",
+        password: "",
+        image: ""
+    });
     const navigate = useNavigate();
     useEffect(() => {
         if (currentUser) {
@@ -38,13 +45,42 @@ export default function Profile({ currentUser, setCurrentUser }) {
             .finally(() => setPostsLoading(false));
     };
 
+    // Xử lý upload ảnh
+    const handleImageUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            // Kiểm tra kích thước file (tối đa 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Kích thước ảnh không được vượt quá 5MB');
+                return;
+            }
+
+            // Kiểm tra định dạng file
+            if (!file.type.startsWith('image/')) {
+                alert('Vui lòng chọn file ảnh hợp lệ');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64String = e.target.result;
+                setFormData(prev => ({
+                    ...prev,
+                    image: base64String
+                }));
+                setImagePreview(base64String);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const handleUpdate = async (values) => {
         setLoading(true);
         try {
             const updateData = {
                 name: values.name,
                 username: values.username,
-                avatar: values.avatar || "",
+                avatar: formData.image || currentUser?.avatar || "",
             };
             if (values.password) {
                 updateData.password = values.password;
@@ -167,15 +203,42 @@ export default function Profile({ currentUser, setCurrentUser }) {
                     </Form.Item>
 
                     <Form.Item
-                        label="Ảnh đại diện (URL)"
+                        label="Ảnh đại diện"
                         name="avatar"
-                        extra="Nhập URL ảnh từ internet (ví dụ: https://example.com/avatar.jpg)"
+                        extra="Chọn file ảnh từ máy tính (tối đa 5MB, định dạng: JPG, PNG, GIF)"
                     >
-                        <Input 
-                            placeholder="https://example.com/avatar.jpg"
-                            prefix={<LinkOutlined />}
-                            style={{ borderRadius: '8px' }}
-                        />
+                        <div>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleImageUpload}
+                                style={{ 
+                                    width: '100%',
+                                    padding: '8px 12px',
+                                    border: '1px solid #d9d9d9',
+                                    borderRadius: '8px',
+                                    fontSize: '14px',
+                                    backgroundColor: '#fff'
+                                }}
+                            />
+                            {imagePreview && (
+                                <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                                    <img 
+                                        src={imagePreview} 
+                                        alt="Preview" 
+                                        style={{ 
+                                            maxWidth: '100px', 
+                                            maxHeight: '100px', 
+                                            borderRadius: '8px',
+                                            border: '2px solid #f0f0f0'
+                                        }} 
+                                    />
+                                    <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
+                                        Xem trước ảnh đại diện
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </Form.Item>
 
                     <Divider />
