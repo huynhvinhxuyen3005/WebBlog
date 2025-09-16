@@ -114,20 +114,34 @@ export default function Profile({ currentUser, setCurrentUser }) {
         }
     };
 
-    const handleDeletePost = (postId) => {
+    const handleDeletePost = async (postId) => {
         if (window.confirm("Bạn có chắc chắn muốn xóa bài viết này?")) {
-            axios.delete(`http://localhost:9999/posts/${postId}`)
-                .then(() => {
-                    notification.success({
-                        message: "🗑️ Đã xóa bài viết!",
-                        description: "Bài viết đã được xóa khỏi hệ thống.",
-                        duration: 3
-                    });
-                    fetchUserPosts();
-                })
-                .catch(() => {
-                    message.error('Lỗi khi xóa bài viết!');
+            try {
+                // Xóa tất cả comments liên quan đến bài viết
+                const commentsResponse = await axios.get('http://localhost:9999/comments');
+                const relatedComments = commentsResponse.data.filter(comment => comment.postId === postId);
+                
+                // Xóa từng comment
+                for (const comment of relatedComments) {
+                    await axios.delete(`http://localhost:9999/comments/${comment.id}`);
+                }
+                
+                // Xóa bài viết
+                await axios.delete(`http://localhost:9999/posts/${postId}`);
+                
+                notification.success({
+                    message: "🗑️ Đã xóa bài viết!",
+                    description: `Bài viết và ${relatedComments.length} bình luận đã được xóa khỏi hệ thống.`,
+                    duration: 3
                 });
+                fetchUserPosts();
+            } catch (error) {
+                notification.error({
+                    message: 'Lỗi khi xóa bài viết!',
+                    duration: 3
+                });
+                console.error("Delete error:", error);
+            }
         }
     };
 

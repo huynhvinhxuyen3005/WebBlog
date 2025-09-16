@@ -26,10 +26,17 @@ function ConfirmDeleteButton({ onConfirm, disabled, children, title }) {
             disabled={disabled}
         >
             <Button
-                type="text"
+                type="primary"
                 danger
                 icon={<DeleteOutlined />}
                 disabled={disabled}
+                size="small"
+                style={{
+                    borderRadius: "8px",
+                    background: "linear-gradient(135deg, #ff4d4f, #cf1322)",
+                    border: "none",
+                    boxShadow: "0 2px 8px rgba(255, 77, 79, 0.3)"
+                }}
             >
                 {children || "Xóa"}
             </Button>
@@ -51,6 +58,13 @@ export default function AdminDashboard({ currentUser }) {
     useEffect(() => {
         if (currentUser && currentUser.role === "admin") {
             fetchAllData();
+            
+            // Auto-refresh data every 10 seconds để cập nhật real-time
+            const interval = setInterval(() => {
+                fetchAllData();
+            }, 10000);
+            
+            return () => clearInterval(interval);
         }
     }, [currentUser]);
 
@@ -72,6 +86,16 @@ export default function AdminDashboard({ currentUser }) {
             .finally(() => setLoading(false));
     };
 
+    const handleEditUser = (user) => {
+        setEditingUser(user);
+        form.setFieldsValue({
+            name: user.name,
+            username: user.username,
+            avatar: user.avatar || "",
+        });
+        setEditModalVisible(true);
+    };
+
     const handleDeleteUser = (userId) => {
         axios.delete(`http://localhost:9999/users/${userId}`)
             .then(() => {
@@ -83,15 +107,26 @@ export default function AdminDashboard({ currentUser }) {
             });
     };
 
-    const handleDeletePost = (postId) => {
-        axios.delete(`http://localhost:9999/posts/${postId}`)
-            .then(() => {
-                message.success("Đã xóa bài viết!");
-                fetchAllData();
-            })
-            .catch(() => {
-                message.error("Lỗi khi xóa bài viết!");
-            });
+    const handleDeletePost = async (postId) => {
+        try {
+            // Xóa tất cả comments liên quan đến bài viết
+            const commentsResponse = await axios.get('http://localhost:9999/comments');
+            const relatedComments = commentsResponse.data.filter(comment => comment.postId === postId);
+            
+            // Xóa từng comment
+            for (const comment of relatedComments) {
+                await axios.delete(`http://localhost:9999/comments/${comment.id}`);
+            }
+            
+            // Xóa bài viết
+            await axios.delete(`http://localhost:9999/posts/${postId}`);
+            
+            message.success(`Đã xóa bài viết`);
+            fetchAllData();
+        } catch (error) {
+            message.error("Lỗi khi xóa bài viết!");
+            console.error("Delete post error:", error);
+        }
     };
 
     const handleDeleteComment = (commentId) => {
@@ -105,15 +140,6 @@ export default function AdminDashboard({ currentUser }) {
             });
     };
 
-    const handleEditUser = (user) => {
-        setEditingUser(user);
-        form.setFieldsValue({
-            name: user.name,
-            username: user.username,
-            avatar: user.avatar || "",
-        });
-        setEditModalVisible(true);
-    };
 
     const handleUpdateUser = async (values) => {
         try {
@@ -151,6 +177,7 @@ export default function AdminDashboard({ currentUser }) {
             title: "Tên",
             dataIndex: "name",
             key: "name",
+            width: 120,
             render: (text, record) => (
                 <Space>
                     <Avatar 
@@ -168,12 +195,14 @@ export default function AdminDashboard({ currentUser }) {
         {
             title: "Username",
             dataIndex: "username",
-            key: "username"
+            key: "username",
+            width: 100
         },
         {
             title: "Vai trò",
             dataIndex: "role",
             key: "role",
+            width: 80,
             render: (role) => (
                 <Tag color={role === "admin" ? "red" : "blue"}>
                     {role === "admin" ? "👑 Admin" : "👤 User"}
@@ -183,13 +212,20 @@ export default function AdminDashboard({ currentUser }) {
         {
             title: "Hành động",
             key: "action",
+            width: 120,
             render: (_, record) => (
-                <Space size="middle">
+                <Space size="small">
                     <Button
-                        type="text"
+                        type="primary"
                         icon={<EditOutlined />}
                         onClick={() => handleEditUser(record)}
-                        style={{ color: '#1890ff' }}
+                        size="small"
+                        style={{
+                            borderRadius: "8px",
+                            background: "linear-gradient(135deg, #1890ff, #722ed1)",
+                            border: "none",
+                            boxShadow: "0 2px 8px rgba(24, 144, 255, 0.3)"
+                        }}
                     >
                         Sửa
                     </Button>
@@ -208,6 +244,7 @@ export default function AdminDashboard({ currentUser }) {
             title: "Tiêu đề",
             dataIndex: "title",
             key: "title",
+            width: 200,
             render: (text) => (
                 <Space>
                     <FileTextOutlined />
@@ -219,6 +256,7 @@ export default function AdminDashboard({ currentUser }) {
             title: "Tác giả",
             dataIndex: "authorId",
             key: "authorId",
+            width: 120,
             render: (authorId) => {
                 const author = users.find((u) => u.id === authorId);
                 return author ? author.name : "Unknown";
@@ -228,6 +266,7 @@ export default function AdminDashboard({ currentUser }) {
             title: "Trạng thái",
             dataIndex: "visibility",
             key: "visibility",
+            width: 100,
             render: (visibility) => (
                 <Tag color={visibility === "public" ? "green" : "orange"}>
                     {visibility === "public" ? "🌍 Công khai" : "🔐 Riêng tư"}
@@ -238,36 +277,54 @@ export default function AdminDashboard({ currentUser }) {
             title: "Likes",
             dataIndex: "likesCount",
             key: "likesCount",
+            width: 80,
             render: (count) => <Text>👍 {count || 0}</Text>
         },
         {
             title: "Comments",
             dataIndex: "commentsCount",
             key: "commentsCount",
+            width: 80,
             render: (count) => <Text>💬 {count || 0}</Text>
         },
         {
             title: "Ngày tạo",
             dataIndex: "createdAt",
             key: "createdAt",
+            width: 120,
             render: (date) => moment(date).format("DD/MM/YYYY HH:mm")
         },
         {
             title: "Hành động",
             key: "action",
+            width: 150,
             render: (_, record) => (
-                <Space size="middle">
+                <Space size="small">
                     <Button
-                        type="text"
+                        type="default"
                         icon={<EyeOutlined />}
                         onClick={() => navigate(`/post/${record.id}`)}
+                        size="small"
+                        style={{
+                            borderRadius: "8px",
+                            border: "2px solid #1890ff",
+                            color: "#1890ff",
+                            boxShadow: "0 2px 8px rgba(24, 144, 255, 0.2)"
+                        }}
                     >
                         Xem
                     </Button>
                     <Button
-                        type="text"
+                        type="primary"
                         icon={<EditOutlined />}
                         onClick={() => navigate(`/edit/${record.id}`)}
+                        size="small"
+                        style={{
+                            borderRadius: "8px",
+                            background: "linear-gradient(135deg, #52c41a, #389e0d)",
+                            border: "none",
+                            boxShadow: "0 2px 8px rgba(82, 196, 26, 0.3)"
+                        }}
                     >
                         Sửa
                     </Button>
@@ -346,53 +403,104 @@ export default function AdminDashboard({ currentUser }) {
     }
 
     return (
-        <div style={{ padding: "24px" }}>
-            <div style={{ marginBottom: 24 }}>
-                <Title level={2}>👑 Bảng điều khiển Admin</Title>
-                <Text type="secondary">Quản lý toàn bộ hệ thống blog</Text>
+        <div style={{ 
+            padding: "24px", 
+            background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)",
+            minHeight: "100vh"
+        }}>
+            <div style={{ 
+                marginBottom: 32, 
+                textAlign: "center",
+                padding: "20px",
+                background: "rgba(255,255,255,0.9)",
+                borderRadius: "16px",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.1)"
+            }}>
+                <Title level={2} style={{ 
+                    color: "#1890ff", 
+                    marginBottom: 8,
+                    textShadow: "0 2px 4px rgba(0,0,0,0.1)"
+                }}>
+                    👑 Bảng điều khiển Admin
+                </Title>
+                <Text type="secondary" style={{ fontSize: "16px" }}>
+                    Quản lý toàn bộ hệ thống blog
+                </Text>
             </div>
 
             {/* Stats */}
-            <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
+            <Row gutter={[24, 24]} style={{ marginBottom: 32 }}>
                 <Col xs={24} sm={8}>
-                    <Card>
+                    <Card style={{
+                        borderRadius: "16px",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                        border: "none",
+                        background: "rgba(255,255,255,0.95)",
+                        transition: "all 0.3s ease"
+                    }}>
                         <Statistic
-                            title="Tổng người dùng"
+                            title="👥 Tổng người dùng"
                             value={users.length}
                             prefix={<UserOutlined />}
-                            valueStyle={{ color: "#1890ff" }}
+                            valueStyle={{ color: "#1890ff", fontSize: "24px", fontWeight: "bold" }}
                         />
                     </Card>
                 </Col>
                 <Col xs={24} sm={8}>
-                    <Card>
+                    <Card style={{
+                        borderRadius: "16px",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                        border: "none",
+                        background: "rgba(255,255,255,0.95)",
+                        transition: "all 0.3s ease"
+                    }}>
                         <Statistic
-                            title="Tổng bài viết"
+                            title="📝 Tổng bài viết"
                             value={posts.length}
                             prefix={<FileTextOutlined />}
-                            valueStyle={{ color: "#52c41a" }}
+                            valueStyle={{ color: "#52c41a", fontSize: "24px", fontWeight: "bold" }}
                         />
                     </Card>
                 </Col>
                 <Col xs={24} sm={8}>
-                    <Card>
+                    <Card style={{
+                        borderRadius: "16px",
+                        boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                        border: "none",
+                        background: "rgba(255,255,255,0.95)",
+                        transition: "all 0.3s ease"
+                    }}>
                         <Statistic
-                            title="Tổng bình luận"
+                            title="💬 Tổng bình luận"
                             value={comments.length}
                             prefix={<MessageOutlined />}
-                            valueStyle={{ color: "#faad14" }}
+                            valueStyle={{ color: "#faad14", fontSize: "24px", fontWeight: "bold" }}
                         />
                     </Card>
                 </Col>
             </Row>
 
             {/* Users + Posts */}
-            <Row gutter={[16, 16]}>
+            <Row gutter={[24, 24]}>
                 <Col xs={24} lg={8}>
                     <Card
                         title="👥 Quản lý người dùng"
-                        style={{ height: "100%" }}
-                        extra={<Tag color="blue">{users.length} người dùng</Tag>}
+                        style={{ 
+                            height: "100%",
+                            borderRadius: "16px",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                            border: "none",
+                            background: "rgba(255,255,255,0.95)"
+                        }}
+                        headStyle={{
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            borderRadius: "16px 16px 0 0",
+                            border: "none"
+                        }}
+                        bodyStyle={{
+                            borderRadius: "0 0 16px 16px"
+                        }}
+                        extra={<Tag color="blue" style={{ borderRadius: "20px" }}>{users.length} người dùng</Tag>}
                     >
                         <Table
                             columns={userColumns}
@@ -408,8 +516,22 @@ export default function AdminDashboard({ currentUser }) {
                 <Col xs={24} lg={16}>
                     <Card
                         title="📝 Quản lý bài viết"
-                        style={{ height: "100%" }}
-                        extra={<Tag color="green">{posts.length} bài viết</Tag>}
+                        style={{ 
+                            height: "100%",
+                            borderRadius: "16px",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                            border: "none",
+                            background: "rgba(255,255,255,0.95)"
+                        }}
+                        headStyle={{
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            borderRadius: "16px 16px 0 0",
+                            border: "none"
+                        }}
+                        bodyStyle={{
+                            borderRadius: "0 0 16px 16px"
+                        }}
+                        extra={<Tag color="green" style={{ borderRadius: "20px" }}>{posts.length} bài viết</Tag>}
                     >
                         <Table
                             columns={postColumns}
@@ -418,18 +540,31 @@ export default function AdminDashboard({ currentUser }) {
                             pagination={{ pageSize: 5 }}
                             size="small"
                             loading={loading}
-                            scroll={{ x: 800 }}
                         />
                     </Card>
                 </Col>
             </Row>
 
             {/* Comments */}
-            <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+            <Row gutter={[24, 24]} style={{ marginTop: 32 }}>
                 <Col xs={24}>
                     <Card
                         title="💬 Quản lý bình luận"
-                        extra={<Tag color="orange">{comments.length} bình luận</Tag>}
+                        style={{
+                            borderRadius: "16px",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.1)",
+                            border: "none",
+                            background: "rgba(255,255,255,0.95)"
+                        }}
+                        headStyle={{
+                            background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                            borderRadius: "16px 16px 0 0",
+                            border: "none"
+                        }}
+                        bodyStyle={{
+                            borderRadius: "0 0 16px 16px"
+                        }}
+                        extra={<Tag color="orange" style={{ borderRadius: "20px" }}>{comments.length} bình luận</Tag>}
                     >
                         <Table
                             columns={commentColumns}
@@ -438,7 +573,6 @@ export default function AdminDashboard({ currentUser }) {
                             pagination={{ pageSize: 10 }}
                             size="small"
                             loading={loading}
-                            scroll={{ x: 1000 }}
                         />
                     </Card>
                 </Col>

@@ -19,6 +19,7 @@ export default function Home({ currentUser }) {
     const [posts, setPosts] = useState([]);
     const [users, setUsers] = useState([]);
     const [likes, setLikes] = useState([]);
+    const [comments, setComments] = useState([]);
     const [visibilityFilter, setVisibilityFilter] = useState("all");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -27,6 +28,7 @@ export default function Home({ currentUser }) {
         fetchPosts();
         fetchUsers();
         fetchLikes();
+        fetchComments();
     }, []);
 
     const fetchPosts = () => {
@@ -52,29 +54,51 @@ export default function Home({ currentUser }) {
             .catch(err => console.error(err));
     };
 
-    const handleDelete = (postId) => {
-        axios.delete(`http://localhost:9999/posts/${postId}`)
-            .then(() => {
-                notification.success({
-                    message: "🗑️ Đã xóa bài viết!",
-                    description: "Bài viết đã được xóa khỏi hệ thống.",
-                    duration: 3,
-                    placement: "topRight",
-                    style: {
-                        borderRadius: "8px",
-                        boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
-                    }
-                });
-                fetchPosts();
-            })
-            .catch(() => {
-                message.error("Lỗi khi xóa bài viết!");
+    const fetchComments = () => {
+        axios.get("http://localhost:9999/comments")
+            .then((res) => setComments(res.data))
+            .catch(err => console.error(err));
+    };
+
+    const handleDelete = async (postId) => {
+        try {
+            // Xóa tất cả comments liên quan đến bài viết
+            const commentsResponse = await axios.get('http://localhost:9999/comments');
+            const relatedComments = commentsResponse.data.filter(comment => comment.postId === postId);
+            
+            // Xóa từng comment
+            for (const comment of relatedComments) {
+                await axios.delete(`http://localhost:9999/comments/${comment.id}`);
+            }
+            
+            // Xóa bài viết
+            await axios.delete(`http://localhost:9999/posts/${postId}`);
+            
+            notification.success({
+                message: "🗑️ Đã xóa bài viết!",
+                description: `Bài viết và ${relatedComments.length} bình luận đã được xóa khỏi hệ thống.`,
+                duration: 3,
+                placement: "topRight",
+                style: {
+                    borderRadius: "8px",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                }
             });
+            fetchPosts();
+            fetchComments();
+        } catch (error) {
+            message.error("Lỗi khi xóa bài viết!");
+            console.error("Delete error:", error);
+        }
     };
 
     const getAuthorName = (authorId) => {
         const user = users.find((u) => u.id === authorId);
         return user ? user.name : "Unknown";
+    };
+
+    const getCommentsCount = (postId) => {
+        return comments.filter(comment => comment.postId === postId).length;
     };
 
     const isLiked = (postId) => {
@@ -299,7 +323,7 @@ export default function Home({ currentUser }) {
                                         navigate(`/post/${post.id}`);
                                     }}
                                 >
-                                    {post.commentsCount || 0}
+                                    {getCommentsCount(post.id)}
                                 </Button>,
                                 ...(currentUser &&
                                 (post.authorId === currentUser.id ||
@@ -361,7 +385,7 @@ export default function Home({ currentUser }) {
                                             👍 {post.likesCount || 0} likes
                                         </Text>
                                         <Text type="secondary" style={{ fontSize: 12 }}>
-                                            💬 {post.commentsCount || 0} bình luận
+                                            💬 {getCommentsCount(post.id)} bình luận
                                         </Text>
                                     </Space>
                                     {currentUser && currentUser.role === "admin" && (

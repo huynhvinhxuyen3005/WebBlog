@@ -147,11 +147,6 @@
       "postId": "p2"
     },
     {
-      "id": "l6",
-      "userId": "u1",
-      "postId": "p3"
-    },
-    {
       "id": "l8",
       "userId": "u3",
       "postId": "p3"
@@ -165,6 +160,21 @@
       "id": "1757505111212",
       "userId": "1757421899322",
       "postId": "p3"
+    },
+    {
+      "id": "1757984744459",
+      "userId": "u1",
+      "postId": "p3"
+    },
+    {
+      "id": "1757984791343",
+      "userId": "u1",
+      "postId": null
+    },
+    {
+      "id": "1757984882476",
+      "userId": null,
+      "postId": null
     }
   ],
   "comments": [
@@ -216,6 +226,20 @@
       "userId": "u3",
       "content": "Medium cũng rất tốt cho việc viết.",
       "createdAt": "2024-07-03T13:15:00Z"
+    },
+    {
+      "id": "c8",
+      "postId": "p3",
+      "userId": "u1",
+      "content": "Ghost có giao diện rất đẹp và hiện đại.",
+      "createdAt": "2024-07-03T14:30:00Z"
+    },
+    {
+      "id": "c10",
+      "postId": "p3",
+      "userId": "u3",
+      "content": "Wix có nhiều template đẹp nhưng hơi nặng.",
+      "createdAt": "2024-07-03T16:00:00Z"
     }
   ]
 }

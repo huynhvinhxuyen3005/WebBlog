@@ -22,6 +22,7 @@ export default function PostDetail({ currentUser }) {
     const [post, setPost] = useState(null);
     const [users, setUsers] = useState([]);
     const [likes, setLikes] = useState([]);
+    const [comments, setComments] = useState([]);
     const [commentContent, setCommentContent] = useState('');
     const [loading, setLoading] = useState(false);
     const [postLoading, setPostLoading] = useState(true);
@@ -30,6 +31,7 @@ export default function PostDetail({ currentUser }) {
         fetchPost();
         fetchUsers();
         fetchLikes();
+        fetchComments();
     }, [id]);
 
     const fetchPost = () => {
@@ -52,6 +54,12 @@ export default function PostDetail({ currentUser }) {
     const fetchLikes = () => {
         axios.get(`http://localhost:9999/likes`)
             .then(res => setLikes(res.data))
+            .catch(err => console.error(err));
+    };
+
+    const fetchComments = () => {
+        axios.get(`http://localhost:9999/comments?postId=${id}`)
+            .then(res => setComments(res.data))
             .catch(err => console.error(err));
     };
 
@@ -97,62 +105,92 @@ export default function PostDetail({ currentUser }) {
         }
     };
 
-    const handleAddComment = () => {
+    const handleAddComment = async () => {
         if (!currentUser) return message.error('Vui lòng đăng nhập để bình luận!');
         if (!commentContent.trim()) return message.error('Vui lòng nhập nội dung bình luận!');
 
         setLoading(true);
-        const newComment = {
-            id: Date.now().toString(),
-            content: commentContent,
-            userId: currentUser.id,
-            createdAt: new Date().toISOString()
-        };
+        try {
+            const newComment = {
+                id: Date.now().toString(),
+                content: commentContent,
+                userId: currentUser.id,
+                postId: id, // Thêm postId để admin có thể track
+                createdAt: new Date().toISOString()
+            };
 
-        const updatedPost = {
-            ...post,
-            comments: [...(post.comments || []), newComment],
-            commentsCount: (post.commentsCount || 0) + 1
-        };
+            // Lưu comment vào endpoint riêng biệt
+            await axios.post('http://localhost:9999/comments', newComment);
 
-        axios.put(`http://localhost:9999/posts/${id}`, updatedPost)
-            .then(() => {
-                setCommentContent('');
-                fetchPost();
-            })
-            .catch(() => message.error('Lỗi khi thêm bình luận!'))
-            .finally(() => setLoading(false));
+            // Cập nhật commentsCount trong post
+            const updatedPost = {
+                ...post,
+                commentsCount: (post.commentsCount || 0) + 1
+            };
+            await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
+
+            setCommentContent('');
+            fetchPost();
+            fetchComments();
+        } catch (error) {
+            message.error('Lỗi khi thêm bình luận!');
+            console.error('Add comment error:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const handleDeleteComment = (commentId) => {
-        const updatedComments = post.comments.filter(comment => comment.id !== commentId);
-        const updatedPost = { ...post, comments: updatedComments, commentsCount: Math.max(0, (post.commentsCount || 0) - 1) };
+    const handleDeleteComment = async (commentId) => {
+        try {
+            // Xóa comment từ endpoint riêng biệt
+            await axios.delete(`http://localhost:9999/comments/${commentId}`);
 
-        axios.put(`http://localhost:9999/posts/${id}`, updatedPost)
-            .then(() => {
-                notification.success({
-                    message: "🗑️ Đã xóa bình luận!",
-                    description: "Bình luận đã được xóa khỏi bài viết.",
-                    duration: 3,
-                    placement: "topRight"
-                });
-                fetchPost();
-            })
-            .catch(() => message.error('Lỗi khi xóa bình luận!'));
+            // Cập nhật commentsCount trong post
+            const updatedPost = {
+                ...post,
+                commentsCount: Math.max(0, (post.commentsCount || 0) - 1)
+            };
+            await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
+
+            notification.success({
+                message: "🗑️ Đã xóa bình luận!",
+                description: "Bình luận đã được xóa khỏi bài viết.",
+                duration: 3,
+                placement: "topRight"
+            });
+            fetchPost();
+            fetchComments();
+        } catch (error) {
+            message.error('Lỗi khi xóa bình luận!');
+            console.error('Delete comment error:', error);
+        }
     };
 
-    const handleDeletePost = () => {
-        axios.delete(`http://localhost:9999/posts/${id}`)
-            .then(() => {
-                notification.success({
-                    message: "🗑️ Đã xóa bài viết!",
-                    description: "Bài viết đã được xóa khỏi hệ thống.",
-                    duration: 3,
-                    placement: "topRight"
-                });
-                setTimeout(() => navigate('/'), 1500);
-            })
-            .catch(() => message.error('Lỗi khi xóa bài viết!'));
+    const handleDeletePost = async () => {
+        try {
+            // Xóa tất cả comments liên quan đến bài viết
+            const commentsResponse = await axios.get('http://localhost:9999/comments');
+            const relatedComments = commentsResponse.data.filter(comment => comment.postId === id);
+            
+            // Xóa từng comment
+            for (const comment of relatedComments) {
+                await axios.delete(`http://localhost:9999/comments/${comment.id}`);
+            }
+            
+            // Xóa bài viết
+            await axios.delete(`http://localhost:9999/posts/${id}`);
+            
+            notification.success({
+                message: "🗑️ Đã xóa bài viết!",
+                description: `Bài viết và ${relatedComments.length} bình luận đã được xóa khỏi hệ thống.`,
+                duration: 3,
+                placement: "topRight"
+            });
+            setTimeout(() => navigate('/'), 1500);
+        } catch (error) {
+            message.error('Lỗi khi xóa bài viết!');
+            console.error('Delete post error:', error);
+        }
     };
 
     if (postLoading) {
@@ -276,11 +314,11 @@ export default function PostDetail({ currentUser }) {
                     </div>
                 )}
 
-                <List
-                    className="comment-list"
-                    dataSource={post.comments || []}
-                    locale={{ emptyText: 'Chưa có bình luận nào' }}
-                    renderItem={comment => (
+                 <List
+                     className="comment-list"
+                     dataSource={comments}
+                     locale={{ emptyText: 'Chưa có bình luận nào' }}
+                     renderItem={comment => (
                         <div key={comment.id} className="comment-item">
                             <Avatar 
                                 src={users.find(u => u.id === comment.userId)?.avatar || null}
