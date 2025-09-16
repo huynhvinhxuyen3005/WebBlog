@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from "react-router-dom";
-import { Button, Layout, Menu, Avatar, Dropdown, Space, Typography, Badge, ConfigProvider, App as AntApp } from "antd";
+import { Button, Layout, Avatar, Dropdown, Space, Badge, ConfigProvider, App as AntApp } from "antd";
 import {
     UserOutlined,
     LogoutOutlined,
     SettingOutlined,
-    PlusOutlined,
-    HomeOutlined,
-    EditOutlined
+    HomeOutlined
 } from "@ant-design/icons";
 import { getUserFromLocalStorage } from "./components/utils/auth";
 import Home from "./components/pages/Home";
@@ -20,7 +18,6 @@ import Profile from "./components/User/Profile";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 
 const { Header, Content } = Layout;
-const { Text } = Typography;
 
 function App() {
     const [currentUser, setCurrentUser] = useState(getUserFromLocalStorage());
@@ -32,28 +29,136 @@ function App() {
 
     const userMenuItems = [
         {
-            key: 'profile',
-            icon: <UserOutlined />,
-            label: <Link to="/profile">Thông tin cá nhân</Link>,
+            key: 'header',
+            type: 'group',
+            label: (
+                <div style={{
+                    padding: '16px 20px 12px 20px',
+                    borderBottom: '1px solid rgba(0,0,0,0.06)',
+                    marginBottom: '8px',
+                    background: 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)'
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <Avatar
+                            size={44}
+                            src={currentUser?.avatar || null}
+                            style={{
+                                background: currentUser?.role === 'admin' 
+                                    ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)' 
+                                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                border: '3px solid #fff',
+                                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                            }}
+                        >
+                            {currentUser?.name ? currentUser.name[0].toUpperCase() : 'U'}
+                        </Avatar>
+                        <div>
+                            <div style={{ 
+                                fontSize: '16px', 
+                                fontWeight: '700', 
+                                color: '#2c3e50',
+                                lineHeight: '1.2',
+                                marginBottom: '2px'
+                            }}>
+                                {currentUser?.name}
+                            </div>
+                            <div style={{ 
+                                fontSize: '13px', 
+                                color: '#6c757d',
+                                lineHeight: '1.2',
+                                fontWeight: '500'
+                            }}>
+                                @{currentUser?.username}
+                            </div>
+                            {currentUser?.role === 'admin' && (
+                                <div style={{
+                                    display: 'inline-block',
+                                    background: 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)',
+                                    color: 'white',
+                                    fontSize: '11px',
+                                    fontWeight: '600',
+                                    padding: '2px 8px',
+                                    borderRadius: '12px',
+                                    marginTop: '4px',
+                                    boxShadow: '0 2px 4px rgba(255,107,107,0.3)'
+                                }}>
+                                    👑 ADMIN
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            ),
         },
         {
-            key: 'create',
-            icon: <PlusOutlined />,
-            label: <Link to="/create">Tạo bài viết</Link>,
+            key: 'profile',
+            icon: <UserOutlined style={{ color: '#667eea', fontSize: '16px' }} />,
+            label: (
+                <Link to="/profile" style={{ 
+                    color: '#2c3e50', 
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    textDecoration: 'none'
+                }}>
+                    👤 Thông tin cá nhân
+                </Link>
+            ),
+            style: {
+                padding: '12px 20px',
+                borderRadius: '8px',
+                margin: '4px 12px',
+                transition: 'all 0.3s ease',
+                background: 'transparent'
+            }
         },
         ...(currentUser && currentUser.role === 'admin' ? [{
             key: 'admin',
-            icon: <SettingOutlined />,
-            label: <Link to="/admin">Quản trị</Link>,
+            icon: <SettingOutlined style={{ color: '#fa8c16', fontSize: '16px' }} />,
+            label: (
+                <Link to="/admin" style={{ 
+                    color: '#2c3e50', 
+                    fontWeight: '500',
+                    fontSize: '14px',
+                    textDecoration: 'none'
+                }}>
+                    ⚙️ Quản trị
+                </Link>
+            ),
+            style: {
+                padding: '12px 20px',
+                borderRadius: '8px',
+                margin: '4px 12px',
+                transition: 'all 0.3s ease',
+                background: 'transparent'
+            }
         }] : []),
         {
             type: 'divider',
+            style: {
+                margin: '8px 0',
+                borderColor: 'rgba(0,0,0,0.08)'
+            }
         },
         {
             key: 'logout',
-            icon: <LogoutOutlined />,
-            label: 'Đăng xuất',
+            icon: <LogoutOutlined style={{ color: '#ff4d4f', fontSize: '16px' }} />,
+            label: (
+                <span style={{ 
+                    color: '#ff4d4f', 
+                    fontWeight: '500',
+                    fontSize: '14px'
+                }}>
+                    🚪 Đăng xuất
+                </span>
+            ),
             onClick: handleLogout,
+            style: {
+                padding: '12px 20px',
+                borderRadius: '8px',
+                margin: '4px 12px',
+                transition: 'all 0.3s ease',
+                background: 'transparent'
+            }
         },
     ];
 
@@ -85,49 +190,69 @@ function App() {
                             <div style={{
                                 display: 'flex',
                                 alignItems: 'center',
-                                gap: '8px',
                                 color: 'white',
                                 fontSize: '20px',
                                 fontWeight: 'bold'
                             }}>
-                                <HomeOutlined style={{ fontSize: '24px' }} />
                                 <span>Blog Của Xuyên</span>
                             </div>
                         </Link>
 
-                        <Menu
-                            theme="dark"
-                            mode="horizontal"
-                            selectable={false}
-                            style={{
-                                background: 'transparent',
-                                border: 'none',
-                                color: 'white'
-                            }}
-                            items={[
-                                {
-                                    label: <Link to="/" style={{ color: 'white' }}>Trang chủ</Link>,
-                                    key: "home",
-                                    icon: <HomeOutlined />
-                                },
-                                ...(currentUser ? [
-                                    {
-                                        label: <Link to="/create" style={{ color: 'white' }}>Tạo bài viết</Link>,
-                                        key: "create",
-                                        icon: <PlusOutlined />
-                                    }
-                                ] : [])
-                            ]}
-                        />
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                            <Link to="/" style={{ textDecoration: 'none' }}>
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '8px',
+                                    color: 'white',
+                                    padding: '10px 16px',
+                                    borderRadius: '8px',
+                                    background: 'rgba(255,255,255,0.1)',
+                                    border: '1px solid rgba(255,255,255,0.2)',
+                                    transition: 'all 0.3s ease',
+                                    fontSize: '14px',
+                                    fontWeight: '500',
+                                    cursor: 'pointer'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                                    e.currentTarget.style.transform = 'translateY(-1px)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                    e.currentTarget.style.transform = 'translateY(0)';
+                                }}
+                                >
+                                    <HomeOutlined style={{ fontSize: '16px' }} />
+                                    <span>Trang chủ</span>
+                                </div>
+                            </Link>
+                        </div>
                     </div>
 
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         {currentUser ? (
                             <Dropdown
-                                menu={{ items: userMenuItems }}
+                                menu={{ 
+                                    items: userMenuItems,
+                                    style: {
+                                        borderRadius: '16px',
+                                        boxShadow: '0 12px 40px rgba(0,0,0,0.15)',
+                                        border: 'none',
+                                        background: 'rgba(255,255,255,0.98)',
+                                        backdropFilter: 'blur(10px)',
+                                        padding: '8px 0',
+                                        minWidth: '300px',
+                                        overflow: 'hidden'
+                                    }
+                                }}
                                 placement="bottomRight"
-                                arrow
+                                arrow={false}
+                                overlayStyle={{
+                                    borderRadius: '16px',
+                                    overflow: 'hidden'
+                                }}
                             >
                                 <div style={{
                                     display: 'flex',
@@ -135,35 +260,54 @@ function App() {
                                     gap: '12px',
                                     cursor: 'pointer',
                                     padding: '8px 16px',
-                                    borderRadius: '24px',
-                                    background: 'rgba(255,255,255,0.1)',
+                                    borderRadius: '16px',
+                                    background: 'rgba(255,255,255,0.15)',
                                     transition: 'all 0.3s ease',
-                                    border: '1px solid rgba(255,255,255,0.2)'
+                                    border: '2px solid rgba(255,255,255,0.3)',
+                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                 }}
                                      onMouseEnter={(e) => {
-                                         e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                         e.currentTarget.style.background = 'rgba(255,255,255,0.25)';
+                                         e.currentTarget.style.transform = 'translateY(-2px)';
+                                         e.currentTarget.style.boxShadow = '0 6px 20px rgba(0,0,0,0.15)';
                                      }}
                                      onMouseLeave={(e) => {
-                                         e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                         e.currentTarget.style.background = 'rgba(255,255,255,0.15)';
+                                         e.currentTarget.style.transform = 'translateY(0)';
+                                         e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.1)';
                                      }}
                                 >
                                     <Badge count={0} size="small">
                                         <Avatar
-                                            size={36}
+                                            size={40}
                                             src={currentUser.avatar || null}
                                             style={{
-                                                backgroundColor: currentUser.role === 'admin' ? '#ff4d4f' : '#3498db',
-                                                border: '2px solid rgba(255,255,255,0.3)'
+                                                background: currentUser.role === 'admin' 
+                                                    ? 'linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%)' 
+                                                    : 'linear-gradient(135deg, #52c41a 0%, #389e0d 100%)',
+                                                border: '3px solid rgba(255,255,255,0.4)',
+                                                boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
                                             }}
                                         >
                                             {currentUser.name ? currentUser.name[0].toUpperCase() : 'U'}
                                         </Avatar>
                                     </Badge>
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                                        <div style={{ fontSize: '14px', fontWeight: '600', color: '#ecf0f1', lineHeight: '1.2' }}>
+                                        <div style={{ 
+                                            fontSize: '15px', 
+                                            fontWeight: '700', 
+                                            color: 'white', 
+                                            lineHeight: '1.2',
+                                            textShadow: '0 1px 2px rgba(0,0,0,0.3)'
+                                        }}>
                                             {currentUser.name}
                                         </div>
-                                        <div style={{ fontSize: '12px', color: '#bdc3c7', lineHeight: '1.2' }}>
+                                        <div style={{ 
+                                            fontSize: '12px', 
+                                            color: 'rgba(255,255,255,0.8)', 
+                                            lineHeight: '1.2',
+                                            fontWeight: '500'
+                                        }}>
                                             @{currentUser.username}
                                         </div>
                                     </div>

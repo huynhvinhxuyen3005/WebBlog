@@ -97,6 +97,7 @@ export default function Login({ setCurrentUser }) {
                         <Button 
                             type="primary" 
                             htmlType="submit"
+                            loading={loading}
                             block
                             size="large"
                             style={{ 

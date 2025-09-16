@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
     Card, Table, Button, Space, Tag, Typography,
     Row, Col, Statistic, Popconfirm, App, Modal, Form, Input, Avatar
 } from "antd";
 import {
     EditOutlined, DeleteOutlined, UserOutlined,
-    FileTextOutlined, MessageOutlined, EyeOutlined, LinkOutlined
+    FileTextOutlined, MessageOutlined, EyeOutlined
 } from "@ant-design/icons";
 import axios from "axios";
 import moment from "moment";
@@ -55,20 +55,7 @@ export default function AdminDashboard({ currentUser }) {
     const [form] = Form.useForm();
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (currentUser && currentUser.role === "admin") {
-            fetchAllData();
-            
-            // Auto-refresh data every 10 seconds để cập nhật real-time
-            const interval = setInterval(() => {
-                fetchAllData();
-            }, 10000);
-            
-            return () => clearInterval(interval);
-        }
-    }, [currentUser]);
-
-    const fetchAllData = () => {
+    const fetchAllData = useCallback(() => {
         setLoading(true);
         Promise.all([
             axios.get("http://localhost:9999/users"),
@@ -84,7 +71,20 @@ export default function AdminDashboard({ currentUser }) {
                 message.error("Lỗi khi tải dữ liệu!");
             })
             .finally(() => setLoading(false));
-    };
+    }, []);
+
+    useEffect(() => {
+        if (currentUser && currentUser.role === "admin") {
+            fetchAllData();
+            
+            // Auto-refresh data every 10 seconds để cập nhật real-time
+            const interval = setInterval(() => {
+                fetchAllData();
+            }, 10000);
+            
+            return () => clearInterval(interval);
+        }
+    }, [currentUser, fetchAllData]);
 
     const handleEditUser = (user) => {
         setEditingUser(user);
@@ -637,7 +637,7 @@ export default function AdminDashboard({ currentUser }) {
                     >
                         <Input 
                             placeholder="https://example.com/avatar.jpg"
-                            prefix={<LinkOutlined />}
+                            prefix={<UserOutlined />}
                             style={{ borderRadius: '8px' }}
                         />
                     </Form.Item>

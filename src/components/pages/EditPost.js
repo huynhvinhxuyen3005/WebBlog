@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Button, Card, Form, Input, Select, App, Space, Divider, } from "antd";
+import { Button, Card, Form, Input, Select, App, Space } from "antd";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
@@ -166,7 +166,6 @@ export default function EditPost({ currentUser }) {
                                         size="small"
                                         title="Gạch chân (Ctrl+U)"
                                     />
-                                    <Divider type="vertical" />
                                     <Button
                                         type={editor.isActive('bulletList') ? 'primary' : 'default'}
                                         icon={<UnorderedListOutlined />}

@@ -7,7 +7,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import {
     EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined,
-    LikeOutlined, LikeFilled, MessageOutlined
+    LikeOutlined, LikeFilled
 } from "@ant-design/icons";
 import moment from "moment";
 import "../style/Home.css";
@@ -317,7 +317,7 @@ export default function Home({ currentUser }) {
                                 <Button
                                     key="comment"
                                     type="text"
-                                    icon={<MessageOutlined />}
+                                    icon={<UserOutlined />}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         navigate(`/post/${post.id}`);
