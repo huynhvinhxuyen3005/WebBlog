@@ -7,7 +7,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import {
     EditOutlined, DeleteOutlined, PlusOutlined, UserOutlined,
-    LikeOutlined, LikeFilled
+    LikeOutlined, LikeFilled, MessageOutlined
 } from "@ant-design/icons";
 import moment from "moment";
 import "../style/Home.css";
@@ -56,8 +56,11 @@ export default function Home({ currentUser }) {
 
     const fetchComments = () => {
         axios.get("http://localhost:9999/comments")
-            .then((res) => setComments(res.data))
-            .catch(err => console.error(err));
+            .then((res) => {
+                setComments(res.data);
+                console.log("Comments loaded:", res.data.length, "total comments");
+            })
+            .catch(err => console.error("Error fetching comments:", err));
     };
 
     const handleDelete = async (postId) => {
@@ -98,7 +101,13 @@ export default function Home({ currentUser }) {
     };
 
     const getCommentsCount = (postId) => {
-        return comments.filter(comment => comment.postId === postId).length;
+        const validComments = comments.filter(comment => 
+            comment.postId === postId && 
+            comment.postId !== null && 
+            comment.postId !== undefined
+        );
+        console.log(`Post ${postId} has ${validComments.length} comments`);
+        return validComments.length;
     };
 
     const isLiked = (postId) => {
@@ -317,7 +326,7 @@ export default function Home({ currentUser }) {
                                 <Button
                                     key="comment"
                                     type="text"
-                                    icon={<UserOutlined />}
+                                    icon={<MessageOutlined />}
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         navigate(`/post/${post.id}`);

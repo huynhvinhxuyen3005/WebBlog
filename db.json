@@ -72,7 +72,7 @@
       "createdAt": "2024-07-02T14:30:00Z",
       "visibility": "public",
       "likesCount": 7,
-      "commentsCount": 2,
+      "commentsCount": 3,
       "comments": [
         {
           "id": "c4",
@@ -95,7 +95,7 @@
       "authorId": "u1",
       "createdAt": "2024-07-03T11:15:00Z",
       "visibility": "public",
-      "likesCount": 12,
+      "likesCount": 13,
       "commentsCount": 4,
       "comments": [
         {
@@ -162,11 +162,6 @@
       "postId": "p3"
     },
     {
-      "id": "1757984744459",
-      "userId": "u1",
-      "postId": "p3"
-    },
-    {
       "id": "1757984791343",
       "userId": "u1",
       "postId": null
@@ -175,6 +170,11 @@
       "id": "1757984882476",
       "userId": null,
       "postId": null
+    },
+    {
+      "id": "1758032538626",
+      "userId": "u1",
+      "postId": "p3"
     }
   ],
   "comments": [
@@ -240,6 +240,13 @@
       "userId": "u3",
       "content": "Wix có nhiều template đẹp nhưng hơi nặng.",
       "createdAt": "2024-07-03T16:00:00Z"
+    },
+    {
+      "id": "1758032610712",
+      "content": "Bài viết rất hay",
+      "userId": "u1",
+      "postId": "p2",
+      "createdAt": "2025-09-16T14:23:30.712Z"
     }
   ]
 }

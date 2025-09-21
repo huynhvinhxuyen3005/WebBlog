@@ -18,10 +18,8 @@ import Profile from "./components/User/Profile";
 import AdminDashboard from "./components/Admin/AdminDashboard";
 
 const { Header, Content } = Layout;
-
 function App() {
     const [currentUser, setCurrentUser] = useState(getUserFromLocalStorage());
-
     const handleLogout = () => {
         localStorage.removeItem("user");
         setCurrentUser(null);
