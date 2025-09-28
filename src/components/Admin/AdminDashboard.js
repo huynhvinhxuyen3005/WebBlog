@@ -12,10 +12,6 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
-
-/**
- * Nút Xóa tái sử dụng với Popconfirm
- */
 function ConfirmDeleteButton({ onConfirm, disabled, children, title }) {
     return (
         <Popconfirm
@@ -76,7 +72,6 @@ export default function AdminDashboard({ currentUser }) {
     useEffect(() => {
         if (currentUser && currentUser.role === "admin") {
             fetchAllData();
-            
             // Auto-refresh data every 10 seconds để cập nhật real-time
             const interval = setInterval(() => {
                 fetchAllData();
@@ -92,6 +87,7 @@ export default function AdminDashboard({ currentUser }) {
             name: user.name,
             username: user.username,
             avatar: user.avatar || "",
+            password: "", // Reset password field
         });
         setEditModalVisible(true);
     };
@@ -150,6 +146,11 @@ export default function AdminDashboard({ currentUser }) {
                 avatar: values.avatar || "",
             };
 
+            // Only update password if a new password is provided
+            if (values.password && values.password.trim() !== "") {
+                updateData.password = values.password;
+            }
+
             await axios.put(`http://localhost:9999/users/${editingUser.id}`, updateData);
             message.success({
                 content: "✅ Cập nhật thông tin người dùng thành công!",
@@ -162,8 +163,6 @@ export default function AdminDashboard({ currentUser }) {
             setEditingUser(null);
             form.resetFields();
             fetchAllData();
-            
-            // Tự động quay về trang Home sau 2 giây
             setTimeout(() => {
                 navigate('/');
             }, 2000);
@@ -628,6 +627,20 @@ export default function AdminDashboard({ currentUser }) {
                         ]}
                     >
                         <Input placeholder="Nhập tên đăng nhập" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Mật khẩu mới"
+                        name="password"
+                        extra="Để trống nếu không muốn thay đổi mật khẩu"
+                        rules={[
+                            { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" }
+                        ]}
+                    >
+                        <Input.Password 
+                            placeholder="Nhập mật khẩu mới (tùy chọn)"
+                            style={{ borderRadius: '8px' }}
+                        />
                     </Form.Item>
 
                     <Form.Item

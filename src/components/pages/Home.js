@@ -50,8 +50,18 @@ export default function Home({ currentUser }) {
 
     const fetchLikes = () => {
         axios.get("http://localhost:9999/likes")
-            .then((res) => setLikes(res.data))
-            .catch(err => console.error(err));
+            .then((res) => {
+                // Filter out invalid likes
+                const validLikes = res.data.filter(like => 
+                    like.postId !== null && 
+                    like.postId !== undefined &&
+                    like.userId !== null &&
+                    like.userId !== undefined
+                );
+                setLikes(validLikes);
+                console.log("Likes loaded:", validLikes.length, "valid likes out of", res.data.length, "total");
+            })
+            .catch(err => console.error("Error fetching likes:", err));
     };
 
     const fetchComments = () => {
@@ -110,11 +120,31 @@ export default function Home({ currentUser }) {
         return validComments.length;
     };
 
+    const updatePostLikeCount = (postId, increment) => {
+        setPosts(prevPosts => 
+            prevPosts.map(post => 
+                post.id === postId 
+                    ? { 
+                        ...post, 
+                        likesCount: increment 
+                            ? (post.likesCount || 0) + 1 
+                            : Math.max(0, (post.likesCount || 0) - 1)
+                    }
+                    : post
+            )
+        );
+    };
+
     const isLiked = (postId) => {
         return (
             currentUser &&
             likes.some(
-                (like) => like.userId === currentUser.id && like.postId === postId
+                (like) => like.userId === currentUser.id && 
+                         like.postId === postId && 
+                         like.postId !== null && 
+                         like.postId !== undefined &&
+                         like.userId !== null &&
+                         like.userId !== undefined
             )
         );
     };
@@ -126,20 +156,28 @@ export default function Home({ currentUser }) {
         }
 
         const existingLike = likes.find(
-            (like) => like.userId === currentUser.id && like.postId === postId
+            (like) => like.userId === currentUser.id && 
+                     like.postId === postId && 
+                     like.postId !== null && 
+                     like.postId !== undefined &&
+                     like.userId !== null &&
+                     like.userId !== undefined
         );
-
         try {
             if (existingLike) {
                 // Unlike
                 await axios.delete(`http://localhost:9999/likes/${existingLike.id}`);
+                updatePostLikeCount(postId, false);
+                setLikes(prevLikes => prevLikes.filter(like => like.id !== existingLike.id));
+                // Update database
                 const updatedPost = posts.find((p) => p.id === postId);
                 if (updatedPost) {
                     await axios.put(`http://localhost:9999/posts/${postId}`, {
                         ...updatedPost,
-                        likesCount: Math.max(0, updatedPost.likesCount - 1)
+                        likesCount: Math.max(0, (updatedPost.likesCount || 0) - 1)
                     });
                 }
+                message.success("Đã bỏ like bài viết!");
             } else {
                 // Like
                 const newLike = {
@@ -148,18 +186,24 @@ export default function Home({ currentUser }) {
                     postId: postId
                 };
                 await axios.post("http://localhost:9999/likes", newLike);
+                updatePostLikeCount(postId, true);
+                setLikes(prevLikes => [...prevLikes, newLike]);
+                // Update database
                 const updatedPost = posts.find((p) => p.id === postId);
                 if (updatedPost) {
                     await axios.put(`http://localhost:9999/posts/${postId}`, {
                         ...updatedPost,
-                        likesCount: updatedPost.likesCount + 1
+                        likesCount: (updatedPost.likesCount || 0) + 1
                     });
                 }
+                message.success("Đã like bài viết!");
             }
+        } catch (error) {
+            console.error("Like error:", error);
+            message.error("Có lỗi xảy ra khi like bài viết!");
+            // Revert changes on error
             fetchPosts();
             fetchLikes();
-        } catch (error) {
-            message.error("Có lỗi xảy ra khi like bài viết!");
         }
     };
 

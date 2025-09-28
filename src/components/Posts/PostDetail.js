@@ -53,8 +53,18 @@ export default function PostDetail({ currentUser }) {
 
     const fetchLikes = () => {
         axios.get(`http://localhost:9999/likes`)
-            .then(res => setLikes(res.data))
-            .catch(err => console.error(err));
+            .then(res => {
+                // Filter out invalid likes
+                const validLikes = res.data.filter(like => 
+                    like.postId !== null && 
+                    like.postId !== undefined &&
+                    like.userId !== null &&
+                    like.userId !== undefined
+                );
+                setLikes(validLikes);
+                console.log("Likes loaded:", validLikes.length, "valid likes out of", res.data.length, "total");
+            })
+            .catch(err => console.error("Error fetching likes:", err));
     };
 
     const fetchComments = () => {
@@ -74,7 +84,14 @@ export default function PostDetail({ currentUser }) {
     };
 
     const isLiked = () => {
-        return currentUser && likes.some(like => like.userId === currentUser.id && like.postId === id);
+        return currentUser && likes.some(like => 
+            like.userId === currentUser.id && 
+            like.postId === id && 
+            like.postId !== null && 
+            like.postId !== undefined &&
+            like.userId !== null &&
+            like.userId !== undefined
+        );
     };
 
     const handleLike = async () => {
@@ -82,25 +99,36 @@ export default function PostDetail({ currentUser }) {
             message.error('Vui lòng đăng nhập để like bài viết!');
             return;
         }
-        const existingLike = likes.find(like => like.userId === currentUser.id && like.postId === id);
-
+        const existingLike = likes.find(like => 
+            like.userId === currentUser.id && 
+            like.postId === id && 
+            like.postId !== null && 
+            like.postId !== undefined &&
+            like.userId !== null &&
+            like.userId !== undefined
+        );
         try {
             if (existingLike) {
                 // Unlike
+                console.log('Removing like:', existingLike.id);
                 await axios.delete(`http://localhost:9999/likes/${existingLike.id}`);
-                const updatedPost = { ...post, likesCount: Math.max(0, post.likesCount - 1) };
+                const updatedPost = { ...post, likesCount: Math.max(0, (post.likesCount || 0) - 1) };
                 await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
                 setPost(updatedPost);
+                message.success("Đã bỏ like bài viết!");
             } else {
                 // Like
                 const newLike = { id: Date.now().toString(), userId: currentUser.id, postId: id };
+                console.log('Adding like:', newLike);
                 await axios.post("http://localhost:9999/likes", newLike);
-                const updatedPost = { ...post, likesCount: post.likesCount + 1 };
+                const updatedPost = { ...post, likesCount: (post.likesCount || 0) + 1 };
                 await axios.put(`http://localhost:9999/posts/${id}`, updatedPost);
                 setPost(updatedPost);
+                message.success("Đã like bài viết!");
             }
             fetchLikes();
-        } catch {
+        } catch (error) {
+            console.error("Like error:", error);
             message.error('Có lỗi xảy ra khi like bài viết!');
         }
     };
@@ -115,13 +143,11 @@ export default function PostDetail({ currentUser }) {
                 id: Date.now().toString(),
                 content: commentContent,
                 userId: currentUser.id,
-                postId: id, // Thêm postId để admin có thể track
+                postId: id,
                 createdAt: new Date().toISOString()
             };
 
-            // Lưu comment vào endpoint riêng biệt
             await axios.post('http://localhost:9999/comments', newComment);
-
             // Cập nhật commentsCount trong post
             const updatedPost = {
                 ...post,
@@ -142,9 +168,8 @@ export default function PostDetail({ currentUser }) {
 
     const handleDeleteComment = async (commentId) => {
         try {
-            // Xóa comment từ endpoint riêng biệt
+            // Xóa comment
             await axios.delete(`http://localhost:9999/comments/${commentId}`);
-
             // Cập nhật commentsCount trong post
             const updatedPost = {
                 ...post,
@@ -176,10 +201,8 @@ export default function PostDetail({ currentUser }) {
             for (const comment of relatedComments) {
                 await axios.delete(`http://localhost:9999/comments/${comment.id}`);
             }
-            
             // Xóa bài viết
             await axios.delete(`http://localhost:9999/posts/${id}`);
-            
             notification.success({
                 message: "🗑️ Đã xóa bài viết!",
                 description: `Bài viết và ${relatedComments.length} bình luận đã được xóa khỏi hệ thống.`,
